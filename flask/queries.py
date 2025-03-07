@@ -1,0 +1,7 @@
+CREATE_RECIPES_TABLE = (
+    "CREATE TABLE IF NOT EXISTS recipes (id SERIAL PRIMARY KEY, title TEXT)"
+)
+
+ADD_RECIPE = "INSERT INTO recipes (title) VALUES (%s)"
+
+LIST_RECIPES = "SELECt * FROM recipes"

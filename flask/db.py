@@ -1,7 +1,13 @@
 from datetime import datetime
 import click
+import os
 
 from flask import current_app, g
+from dotenv import load_dotenv
+import psycopg2
+
+load_dotenv()
+db_url = os.getenv("DATABASE_URL")
 
 
 def init_db():
@@ -15,7 +21,10 @@ def init_db_command():
 
 
 def get_db():
-    pass
+    if "db" not in g:
+        g.db = psycopg2.connect(db_url)
+
+    return g.db
 
 
 def close_db():
