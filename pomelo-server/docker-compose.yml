@@ -1,5 +1,5 @@
 services:
-  pomelo-db:
+  db:
     image: postgres
     environment:
       POSTGRES_PASSWORD: postgres
@@ -10,14 +10,14 @@ services:
     ports: 
       - '5432:5432'
   
-  pomelo-server:
+  flask:
     build: .
     depends_on:
-      - pomelo-db
+      - db
     ports: 
       - '5000:5000'
     volumes:
       - .:/app
     environment:
       - FLASK_DEBUG=1
-    command: flask app --app app.py --host 0.0.0.0
+    command: uv run flask --app hello run --host 0.0.0.0
