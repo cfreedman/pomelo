@@ -20,4 +20,4 @@ services:
       - .:/app
     environment:
       - FLASK_DEBUG=1
-    command: uv run flask --app hello run --host 0.0.0.0
+    command: flask --app hello run --host 0.0.0.0
