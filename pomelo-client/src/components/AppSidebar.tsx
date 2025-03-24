@@ -6,6 +6,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
 } from "./ui/sidebar";
@@ -13,13 +14,20 @@ import {
 export default function AppSidebar(): JSX.Element {
   return (
     <Sidebar>
+      <SidebarHeader>
+        <h1>Hello</h1>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Stuff</SidebarGroupLabel>
+          <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>Stuff 1</SidebarMenuItem>
-              <SidebarMenuItem>Stuff 2</SidebarMenuItem>
+              <SidebarMenuItem>Home</SidebarMenuItem>
+              <SidebarMenuItem>Recipes</SidebarMenuItem>
+              <SidebarMenuItem>Ingredients</SidebarMenuItem>
+              <SidebarMenuItem>Grocery Stores</SidebarMenuItem>
+              <SidebarMenuItem>Weekly Meals</SidebarMenuItem>
+              <SidebarMenuItem>Settings</SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

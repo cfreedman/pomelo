@@ -1,6 +1,7 @@
 import "./App.css";
 import AppSidebar from "./components/AppSidebar";
-import Login from "./components/Login";
+import Recipe from "./components/Recipe";
+import RecipeList, { recipeList } from "./components/RecipeList";
 import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 
 function App() {
@@ -8,7 +9,7 @@ function App() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger />
-      <Login />
+      <RecipeList recipes={recipeList} />
     </SidebarProvider>
   );
 }
