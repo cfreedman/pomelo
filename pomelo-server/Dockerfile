@@ -9,4 +9,5 @@ WORKDIR /app
 
 RUN uv sync --frozen
 
-ENV PATH="/app/.venv/bin:$PATH"
+RUN uv add flask
+# ENV PATH="/app/.venv/bin:$PATH"

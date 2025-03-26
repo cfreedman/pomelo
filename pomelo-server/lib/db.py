@@ -2,12 +2,11 @@ from datetime import datetime
 import click
 import os
 
-from typing import List, String
 from flask import current_app, g
 from dotenv import load_dotenv
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey, Integer
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 load_dotenv()
@@ -25,6 +24,7 @@ ingredients_recipes_bridge = db.Table(
     "ingredients_recipes_bridge",
     db.Column("recipe_id", Integer, ForeignKey("recipes.id")),
     db.Column("ingredient_id", Integer, ForeignKey("ingredients.id")),
+    db.Column("quantity", Integer),
 )
 
 
@@ -34,7 +34,7 @@ class Ingredient(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[int] = mapped_column(String(50), nullable=False)
     units: Mapped[str] = mapped_column(String(20))
-    preferred_store: Mapped[int] = mapped_column(ForeignKey("stores.id"))
+    # preferred_store: Mapped[int] = mapped_column(ForeignKey("stores.id"))
 
     def __repr__(self) -> str:
         return f"Ingredient id={self.id}, name={self.name}"
@@ -45,8 +45,8 @@ class Recipe(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[int] = mapped_column(String(50))
-    servings: Mapped[int] = mapped_column(Integer)
-    ingredient = relationship(
+    # servings: Mapped[int] = mapped_column(Integer)
+    ingredients = relationship(
         "Ingredient", secondary=ingredients_recipes_bridge, backref="associated_recipes"
     )
 
@@ -79,27 +79,27 @@ class Stores(db.Model):
         return f"Store {self.name} located at {self.address}"
 
 
-def init_db():
-    db = get_db()
+# def init_db():
+#     db = get_db()
 
 
-@click.command("init-db")
-def init_db_command():
-    init_db()
-    click.echo("Initialized database...")
+# @click.command("init-db")
+# def init_db_command():
+#     init_db()
+#     click.echo("Initialized database...")
 
 
-def get_db():
-    if "db" not in g:
-        g.db = psycopg2.connect(db_url)
+# def get_db():
+#     if "db" not in g:
+#         g.db = psycopg2.connect(db_url)
 
-    return g.db
-
-
-def close_db():
-    pass
+#     return g.db
 
 
-def init_app(app):
-    app.teardown_appcontext(close_db)
-    app.cli.add_command(init_db_command)
+# def close_db():
+#     pass
+
+
+# def init_app(app):
+#     app.teardown_appcontext(close_db)
+#     app.cli.add_command(init_db_command)

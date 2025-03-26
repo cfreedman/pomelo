@@ -1,40 +1,19 @@
-import os
-
 from flask import Flask
 
+from db import db
 
-def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True)
 
-    app.config.from_mapping(
-        SECRET_KEY="dev", DATABASE=os.path.join(app.instance_path, "flask.database")
-    )
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    "postgresql://postgres:postgres@db:5432/pomelo-db"
+)
 
-    if test_config is None:
-        app.config.from_pyfile("config.py", silent=True)
-    else:
-        app.config.from_mapping(test_config)
 
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+db.init_app(app)
 
-    from . import db
-
-    db.init_app(app)
-
-    from . import auth
-
-    app.register_blueprint(auth.bp)
-
-    from . import home
-
-    app.register_blueprint(home.bp)
-    app.add_url_rule("/", endpoint="index")
-
-    return app
+with app.app_context():
+    db.create_all()
 
 
 if __name__ == "__main__":
-    app = create_app()
+    app.run()
