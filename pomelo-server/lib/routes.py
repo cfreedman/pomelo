@@ -1,17 +1,18 @@
 from app import app
 from flask import make_response, request
 from db import Ingredient, Recipe, db
+import schemas
 
 
-@app.route("/recipe", methods=["GET"])
+@app.get("/recipe")
 def recipe_list():
-    all_recipes = Recipe.query.all()
+    all_recipes = [schemas.Recipe.from_orm(recipe) for recipe in Recipe.query.all()]
     if all_recipes:
         return make_response({"blank": "blank"})
 
 
-@app.route("/recipe/<int>", methods=["GET"])
-def get_recipe():
+@app.get("/recipe/<int:id>")
+def get_recipe(id: int):
     recipe = Recipe.query.filter_by(id=id).first()
     if recipe:
         return make_response({"recipe": recipe.serialize})
@@ -19,8 +20,8 @@ def get_recipe():
         return make_response({"message": "Recipe by that id not found"}, 404)
 
 
-@app.route("/recipe", method=["POST"])
-def add_recipe():
+@app.post("/recipe")
+def add_recipe(recipe: Recipe):
     data = request.json
     name = data.get("name")
     ingredients = data.get("ingredients")

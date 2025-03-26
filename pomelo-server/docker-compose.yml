@@ -16,7 +16,7 @@ services:
       - '5000:5000'
     volumes:
       - .:/app
-      - /app/venv
+      - /app/.venv
     environment:
       - FLASK_DEBUG=1
     command: uv run -- flask --app lib/app run --host 0.0.0.0
