@@ -5,12 +5,12 @@ interface Ingredient {
   unit?: string;
 }
 
-interface Recipe {
+export interface Recipe {
   name: string;
   ingredients: Ingredient[];
 }
 
-export const recipe: Recipe = {
+export const greenCurry: Recipe = {
   name: "Green Curry",
   ingredients: [
     { name: "Chicken Thigh" },
@@ -18,6 +18,11 @@ export const recipe: Recipe = {
     { name: "Green Curry Paste", unit: "g" },
     { name: "Kaffir Lime Leaves" },
   ],
+};
+
+export const stuffTofu: Recipe = {
+  name: "Stuffed Tofu",
+  ingredients: [{ name: "Soft tofu " }, { name: "Soy sauce ", unit: "ml" }],
 };
 
 export default function Recipe({ name, ingredients }: Recipe): JSX.Element {
