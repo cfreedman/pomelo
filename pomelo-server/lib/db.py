@@ -20,12 +20,12 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 
-ingredients_recipes_bridge = db.Table(
-    "ingredients_recipes_bridge",
-    db.Column("recipe_id", Integer, ForeignKey("recipes.id")),
-    db.Column("ingredient_id", Integer, ForeignKey("ingredients.id")),
-    db.Column("quantity", Integer),
-)
+# ingredients_recipes_bridge = db.Table(
+#     "ingredients_recipes_bridge",
+#     db.Column("recipe_id", Integer, ForeignKey("recipes.id")),
+#     db.Column("ingredient_id", Integer, ForeignKey("ingredients.id")),
+#     db.Column("quantity", Integer),
+# )
 
 
 class Ingredient(db.Model):
@@ -35,6 +35,9 @@ class Ingredient(db.Model):
     name: Mapped[int] = mapped_column(String(50), nullable=False)
     units: Mapped[str] = mapped_column(String(20))
     # preferred_store: Mapped[int] = mapped_column(ForeignKey("stores.id"))
+    associated_recipes = relationship(
+        "IngredientRecipeBridge", back_populates="ingredient"
+    )
 
     def __repr__(self) -> str:
         return f"Ingredient id={self.id}, name={self.name}"
@@ -46,26 +49,23 @@ class Recipe(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[int] = mapped_column(String(50))
     # servings: Mapped[int] = mapped_column(Integer)
-    ingredients = relationship(
-        "Ingredient", secondary=ingredients_recipes_bridge, backref="associated_recipes"
-    )
+    ingredients = relationship("IngredientRecipeBridge", back_populates="recipe")
 
     def __repr__(self) -> str:
         return f"Recipe id={self.id}, name={self.name}"
 
 
-# class IngredientRecipeBridge(db.Model):
-#     __tablename__ = "ingredient_recipe_bridge"
+class IngredientRecipeBridge(db.Model):
+    __tablename__ = "ingredients_recipes_bridge"
 
-#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-#     recipe_id: Mapped[int] = mapped_column(ForeignKey("recipes.id"), nullable=False)
-#     ingredient_id: Mapped[int] = mapped_column(
-#         ForeignKey("ingredients.id"), nullable=False
-#     )
-#     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    recipe_id: Mapped[int] = mapped_column(ForeignKey("recipes.id"))
+    ingredient_id: Mapped[int] = mapped_column(ForeignKey("ingredients.id"))
+    quantity: Mapped[int] = mapped_column(Integer)
+    recipe = relationship("Recipe", back_populates="ingredients")
+    ingredient = relationship("Ingredient", back_populates="associated_recipes")
 
-#     def __repr__(self) -> str:
-#         return f"Ingredient id={self.ingredient_id} appears in recipe {self.recipe_id} with quantity {self.quantity}"
+    def __repr__(self) -> str:
+        return f"Ingredient id={self.ingredient_id} appears in recipe {self.recipe_id} with quantity {self.quantity}"
 
 
 class Stores(db.Model):

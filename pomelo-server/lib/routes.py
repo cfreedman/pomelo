@@ -6,7 +6,9 @@ import schemas
 
 @app.get("/recipe")
 def recipe_list():
-    all_recipes = [schemas.Recipe.from_orm(recipe) for recipe in Recipe.query.all()]
+    all_recipes = [
+        schemas.Recipe.model_validate(recipe) for recipe in Recipe.query.all()
+    ]
     if all_recipes:
         return make_response({"blank": "blank"})
 

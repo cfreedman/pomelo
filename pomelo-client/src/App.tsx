@@ -1,22 +1,22 @@
+import { BrowserRouter, Routes, Route } from "react-router";
+
 import "./App.css";
-import AppSidebar from "./components/AppSidebar";
-import Recipe, { greenCurry } from "./components/Recipe";
-import RecipeContainer from "./components/RecipeContainer";
-import RecipeList, { recipeList } from "./components/RecipeList";
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
+import CalendarPage from "./pages/CalendarPage";
+import RecipesPage from "./pages/RecipesPage";
+import StoresPage from "./pages/StoresPage";
+import SidebarWrapper from "./pages/SidebarWrapper";
 
 function App() {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarTrigger />
-      <div className="flex justify-between w-full">
-        <RecipeList recipes={recipeList} />
-        <RecipeContainer>
-          <Recipe name={greenCurry.name} ingredients={greenCurry.ingredients} />
-        </RecipeContainer>
-      </div>
-    </SidebarProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<SidebarWrapper />}>
+          <Route path="recipes" element={<RecipesPage />} />
+          <Route path="stores" element={<StoresPage />} />
+          <Route path="calendar" element={<CalendarPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
