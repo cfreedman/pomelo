@@ -1,6 +1,7 @@
 import "./App.css";
 import AppSidebar from "./components/AppSidebar";
 import Recipe, { greenCurry } from "./components/Recipe";
+import RecipeContainer from "./components/RecipeContainer";
 import RecipeList, { recipeList } from "./components/RecipeList";
 import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 
@@ -11,9 +12,9 @@ function App() {
       <SidebarTrigger />
       <div className="flex justify-between w-full">
         <RecipeList recipes={recipeList} />
-        <div className="w-[30%]">
+        <RecipeContainer>
           <Recipe name={greenCurry.name} ingredients={greenCurry.ingredients} />
-        </div>
+        </RecipeContainer>
       </div>
     </SidebarProvider>
   );
