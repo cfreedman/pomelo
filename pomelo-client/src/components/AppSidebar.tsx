@@ -1,4 +1,6 @@
 import { JSX } from "react";
+import { Link } from "react-router";
+
 import {
   Sidebar,
   SidebarContent,
@@ -22,12 +24,24 @@ export default function AppSidebar(): JSX.Element {
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>Home</SidebarMenuItem>
-              <SidebarMenuItem>Recipes</SidebarMenuItem>
-              <SidebarMenuItem>Ingredients</SidebarMenuItem>
-              <SidebarMenuItem>Grocery Stores</SidebarMenuItem>
-              <SidebarMenuItem>Weekly Meals</SidebarMenuItem>
-              <SidebarMenuItem>Settings</SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link to="/">Home</Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link to="/recipes">Recipes</Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link to="/">Ingredients</Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link to="/stores">Grocery Stores</Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link to="/calendar">Weekly Meals</Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Link to="/">Settings</Link>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
