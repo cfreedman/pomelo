@@ -1,7 +1,7 @@
 from flask import make_response, request, jsonify
 
 from .app import app
-from .db import Recipe, Ingredient, IngredientRecipeBridge, db
+from .db import Recipe, Ingredient, IngredientRecipeBridge, Tag, TagRecipeBridge, db
 from . import schemas
 
 
@@ -10,21 +10,41 @@ def recipe_list():
     recipes = Recipe.query.all()
     results = []
     for recipe in recipes:
-        results.append(schemas.RecipeDB.model_validate(recipe))
-    return make_response(results)
+        ingredients = []
+        for link in recipe.ingredient_associations:
+            ingredient = link.ingredient
+            ingredient_data = schemas.RecipeIngredient(
+                name=ingredient.name,
+                units=ingredient.units,
+                quantity=link.quantity,
+                id=ingredient.id,
+            )
+            ingredients.append(ingredient_data)
+
+        response_recipe = schemas.Recipe(
+            id=recipe.id,
+            name=recipe.name,
+            servings=recipe.servings,
+            cuisine=recipe.cuisine,
+            meal_type=recipe.meal_type,
+            tags=[
+                schemas.Tag(id=association.tag.id, name=association.tag.name)
+                for association in recipe.tag_associations
+            ],
+            ingredients=ingredients,
+        )
+        results.append(response_recipe)
+    return make_response([result.model_dump() for result in results])
 
 
 @app.get("/recipe/<int:id>")
 def get_recipe(id: int):
     recipe = db.session.query(Recipe).filter_by(id=id).first()
     if recipe:
-        id = recipe.id
-        name = recipe.name
-        servings = recipe.servings
         ingredients = []
         for association in recipe.ingredient_associations:
             ingredient = association.ingredient
-            ingredient_data = schemas.RecipeIngredientDB(
+            ingredient_data = schemas.RecipeIngredient(
                 name=ingredient.name,
                 units=ingredient.units,
                 quantity=association.quantity,
@@ -32,10 +52,19 @@ def get_recipe(id: int):
             )
             ingredients.append(ingredient_data)
 
-        recipe_data = schemas.RecipeDB(
-            id=id,
-            name=name,
-            servings=servings,
+        tags = []
+        for association in recipe.tag_associations:
+            tag = association.tag
+            tag_data = schemas.Tag(id=tag.id, name=tag.name)
+            tags.append(tag_data)
+
+        recipe_data = schemas.Recipe(
+            id=recipe.id,
+            name=recipe.name,
+            servings=recipe.servings,
+            cuisine=recipe.cuisine,
+            meal_type=recipe.meal_type,
+            tags=tags,
             ingredients=ingredients,
         )
 
@@ -48,8 +77,13 @@ def get_recipe(id: int):
 @app.post("/recipe")
 def add_recipe():
     data = request.get_json()
-    recipe_data = schemas.RecipeBase(**data)
-    new_recipe = Recipe(name=recipe_data.name, servings=recipe_data.servings)
+    recipe_data = schemas.RecipeCreate(**data)
+    new_recipe = Recipe(
+        name=recipe_data.name,
+        cuisine=recipe_data.cuisine,
+        meal_type=recipe_data.meal_type,
+        servings=recipe_data.servings,
+    )
     db.session.add(new_recipe)
     db.session.flush()
 
@@ -58,22 +92,34 @@ def add_recipe():
             name=ingredient.name, units=ingredient.units
         ).first()
         if existing_ingredient:
-            bridge = IngredientRecipeBridge(
-                recipe_id=new_recipe.id,
-                ingredient_id=existing_ingredient.id,
-                quantity=ingredient.quantity,
-            )
-            db.session.add(bridge)
+            ingredient_id = existing_ingredient.id
         else:
             new_ingredient = Ingredient(name=ingredient.name, units=ingredient.units)
             db.session.add(new_ingredient)
             db.session.flush()
-            bridge = IngredientRecipeBridge(
-                recipe_id=new_recipe.id,
-                ingredient_id=new_ingredient.id,
-                quantity=ingredient.quantity,
-            )
-            db.session.add(bridge)
+            ingredient_id = new_ingredient.id
+
+        bridge = IngredientRecipeBridge(
+            recipe_id=new_recipe.id,
+            ingredient_id=ingredient_id,
+            quantity=ingredient.quantity,
+        )
+        db.session.add(bridge)
+
+    for tag in recipe_data.tags:
+        existing_tag = Tag.query.filter_by(name=tag).first()
+        if existing_tag:
+            tag_id = existing_tag.id
+        else:
+            new_tag = Tag(name=tag)
+            db.session.add(new_tag)
+            db.session.flush()
+            tag_id = new_tag.id
+        bridge = TagRecipeBridge(
+            recipe_id=new_recipe.id,
+            tag_id=tag_id,
+        )
+        db.session.add(bridge)
 
     db.session.commit()
     return make_response(f"Recipe {recipe_data.name} successfully added to database")
@@ -82,13 +128,14 @@ def add_recipe():
 @app.put("/recipe/<int:id>")
 def update_recipe(id: int):
     data = request.get_json()
-    recipe_data = schemas.RecipeBase(**data)
+    recipe_data = schemas.RecipeCreate(**data)
     recipe = db.session.query(Recipe).filter(Recipe.id == id).first()
     if recipe:
         recipe.name = recipe_data.name
+        recipe.cuisine = recipe_data.cuisine
+        recipe.meal_type = recipe_data.meal_type
         recipe.servings = recipe_data.servings
 
-        # Clear existing associations
         recipe.ingredient_associations.clear()
 
         for ingredient in recipe_data.ingredients:
@@ -96,24 +143,37 @@ def update_recipe(id: int):
                 name=ingredient.name, units=ingredient.units
             ).first()
             if existing_ingredient:
-                bridge = IngredientRecipeBridge(
-                    recipe_id=recipe.id,
-                    ingredient_id=existing_ingredient.id,
-                    quantity=ingredient.quantity,
-                )
-                db.session.add(bridge)
+                ingredient_id = existing_ingredient.id
             else:
                 new_ingredient = Ingredient(
                     name=ingredient.name, units=ingredient.units
                 )
                 db.session.add(new_ingredient)
                 db.session.flush()
-                bridge = IngredientRecipeBridge(
-                    recipe_id=recipe.id,
-                    ingredient_id=new_ingredient.id,
-                    quantity=ingredient.quantity,
-                )
-                db.session.add(bridge)
+                ingredient_id = new_ingredient.id
+            bridge = IngredientRecipeBridge(
+                recipe_id=recipe.id,
+                ingredient_id=ingredient_id,
+                quantity=ingredient.quantity,
+            )
+            db.session.add(bridge)
+
+        recipe.tag_associations.clear()
+
+        for tag in recipe_data.tags:
+            existing_tag = Tag.query.filter_by(name=tag).first()
+            if existing_tag:
+                tag_id = existing_tag.id
+            else:
+                new_tag = Tag(name=tag)
+                db.session.add(new_tag)
+                db.session.flush()
+                tag_id = new_tag.id
+            bridge = TagRecipeBridge(
+                recipe_id=recipe.id,
+                tag_id=tag_id,
+            )
+        db.session.add(bridge)
 
         db.session.commit()
         return make_response(f"Recipe {recipe_data.name} successfully updated")

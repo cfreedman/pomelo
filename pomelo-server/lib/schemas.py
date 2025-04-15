@@ -1,31 +1,50 @@
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import AliasChoices, BaseModel, Field
 
 
-class IngredientBase(BaseModel):
+class Ingredient(BaseModel):
+    id: int
     name: str
     units: Optional[str] = None
 
 
-class IngredientDB(IngredientBase):
+class RecipeIngredient(BaseModel):
     id: int
-
-
-class RecipeIngredient(IngredientBase):
+    name: str
+    units: Optional[str] = None
     quantity: int
 
 
-class RecipeIngredientDB(RecipeIngredient):
-    id: int
-
-
-class RecipeBase(BaseModel):
+class RecipeIngredientCreate(BaseModel):
     name: str
+    units: Optional[str] = None
+    quantity: int
+
+
+class Tag(BaseModel):
+    id: int
+    name: str
+
+
+class Recipe(BaseModel):
+    id: int
+    name: str
+    cuisine: Optional[str]
+    meal_type: Optional[str] = Field(
+        validation_alias=AliasChoices("meal_type", "mealType")
+    )
     servings: int
+    tags: List[Tag]
     ingredients: List[RecipeIngredient]
 
 
-class RecipeDB(RecipeBase):
-    id: int
-    ingredients: List[RecipeIngredientDB]
+class RecipeCreate(BaseModel):
+    name: str
+    cuisine: Optional[str]
+    meal_type: Optional[str] = Field(
+        validation_alias=AliasChoices("meal_type", "mealType")
+    )
+    servings: int
+    tags: List[str]
+    ingredients: List[RecipeIngredientCreate]

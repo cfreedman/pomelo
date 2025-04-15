@@ -1,9 +1,11 @@
 from flask import Flask, request, make_response, jsonify
+from flask_cors import CORS
 
 from .db import db
 
 
 app = Flask(__name__)
+CORS(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = (
     "postgresql://postgres:postgres@localhost:5432/pomelo-db"
 )

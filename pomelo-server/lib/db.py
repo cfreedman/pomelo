@@ -24,7 +24,7 @@ class Ingredient(db.Model):
     __tablename__ = "ingredients"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[int] = mapped_column(String(50), nullable=False)
+    name: Mapped[str] = mapped_column(String(50))
     units: Mapped[str] = mapped_column(String(20), nullable=True)
     # preferred_store: Mapped[int] = mapped_column(ForeignKey("stores.id"))
 
@@ -37,15 +37,34 @@ class Ingredient(db.Model):
         return f"Ingredient id={self.id}, name={self.name}"
 
 
+class Tag(db.Model):
+    __tablename__ = "tags"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(50))
+
+    recipe_associations: Mapped[List["TagRecipeBridge"]] = relationship(
+        back_populates="tag"
+    )
+
+    def __repr__(self) -> str:
+        return f"Tag id={self.id}, name={self.name}"
+
+
 class Recipe(db.Model):
     __tablename__ = "recipes"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[int] = mapped_column(String(50))
+    name: Mapped[str] = mapped_column(String(50))
+    cuisine: Mapped[str] = mapped_column(String(100), nullable=True)
+    meal_type: Mapped[str] = mapped_column(String(50), nullable=True)
     servings: Mapped[int] = mapped_column(Integer)
 
     # Field to select list of ingredient-recipe-bridge rows for data stored there
     ingredient_associations: Mapped[List["IngredientRecipeBridge"]] = relationship(
+        back_populates="recipe"
+    )
+    tag_associations: Mapped[List["TagRecipeBridge"]] = relationship(
         back_populates="recipe"
     )
 
@@ -66,6 +85,18 @@ class IngredientRecipeBridge(db.Model):
 
     def __repr__(self) -> str:
         return f"Ingredient id={self.ingredient_id} appears in recipe {self.recipe_id} with quantity {self.quantity}"
+
+
+class TagRecipeBridge(db.Model):
+    __tablename__ = "tag_recipe_bridge"
+
+    recipe_id: Mapped[int] = mapped_column(ForeignKey("recipes.id"), primary_key=True)
+    tag_id: Mapped[int] = mapped_column(ForeignKey("tags.id"), primary_key=True)
+    recipe = relationship("Recipe", back_populates="tag_associations")
+    tag = relationship("Tag", back_populates="recipe_associations")
+
+    def __repr__(self) -> str:
+        return f"Tag id={self.tag_id} appears in recipe {self.recipe_id}"
 
 
 # class Stores(db.Model):
