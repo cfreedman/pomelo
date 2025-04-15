@@ -1,49 +1,72 @@
-from app import app
-from flask import make_response, request
-from db import Ingredient, Recipe, db
-import schemas
+from flask import make_response, request, jsonify
+
+from .app import app
+from .db import Recipe, Ingredient, IngredientRecipeBridge, db
+from . import schemas
 
 
 @app.get("/recipe")
 def recipe_list():
-    all_recipes = [
-        schemas.Recipe.model_validate(recipe) for recipe in Recipe.query.all()
-    ]
-    if all_recipes:
-        return make_response({"blank": "blank"})
+    recipes = Recipe.query.all()
+    results = []
+    for recipe in recipes:
+        results.append(schemas.RecipeDB.model_validate(recipe))
+    return make_response(results)
 
 
-@app.get("/recipe/<int:id>")
-def get_recipe(id: int):
-    recipe = Recipe.query.filter_by(id=id).first()
-    if recipe:
-        return make_response({"recipe": recipe.serialize})
-    else:
-        return make_response({"message": "Recipe by that id not found"}, 404)
+# @app.get("/recipe/<int:id>")
+# def get_recipe(id: int):
+#     recipe = Recipe.query.filter_by(id=id).first()
+#     if recipe:
+#         return make_response({"recipe": recipe.serialize})
+#     else:
+#         return make_response({"message": "Recipe by that id not found"}, 404)
 
 
 @app.post("/recipe")
-def add_recipe(recipe: Recipe):
-    data = request.json
-    name = data.get("name")
-    ingredients = data.get("ingredients")
-    if not name or not ingredients:
+def add_recipe():
+    data = request.get_json()
+    recipe_data = schemas.RecipeBase(**data)
+    new_recipe = Recipe(name=recipe_data.name, servings=recipe_data.servings)
+    db.session.add(new_recipe)
+    db.session.flush()
+
+    for ingredient in recipe_data.ingredients:
+        existing_ingredient = Ingredient.query.filter_by(
+            name=ingredient.name, units=ingredient.units
+        ).first()
+        if existing_ingredient:
+            bridge = IngredientRecipeBridge(
+                recipe_id=new_recipe.id,
+                ingredient_id=existing_ingredient.id,
+                quantity=ingredient.quantity,
+            )
+            db.session.add(bridge)
+        else:
+            new_ingredient = Ingredient(name=ingredient.name, units=ingredient.units)
+            db.session.add(new_ingredient)
+            db.session.flush()
+            bridge = IngredientRecipeBridge(
+                recipe_id=new_recipe.id,
+                ingredient_id=new_ingredient.id,
+                quantity=ingredient.quantity,
+            )
+            db.session.add(bridge)
+
+    db.session.commit()
+    return make_response(f"Recipe {recipe_data.name} successfully added to database")
+
+
+@app.put("/recipe/<int:id>")
+def update_recipe(id: int):
+    data = request.get_json()
+    updated_name = data["name"]
+    recipe = db.session.query(Recipe).filter(Recipe.id == id).first()
+    if recipe:
+        recipe.name = updated_name
+        db.session.commit()
         return make_response(
-            {"message": "Invalid recipe - need a name and ingredients"}, 400
+            f"Object with id {id} successfully updated with name {updated_name}"
         )
 
-    recipe = Recipe(name)
-    for ingredient in ingredients:
-        if not (
-            ingredient_query := Ingredient.query.filter_by(name=ingredient.name).first()
-        ):
-            ingredient = Ingredient(ingredient.name)
-            db.session.add(ingredient)
-        else:
-            ingredient = ingredient_query
-
-        recipe.ingredients.append(ingredient)
-
-    db.session.add(recipe)
-    db.session.commit()
-    return make_response({"message": "Recipe successfully saved"}, 201)
+    return make_response(f"Unable to find object in database with id {id}")

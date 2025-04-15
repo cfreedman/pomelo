@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -8,24 +8,25 @@ class IngredientBase(BaseModel):
     units: Optional[str] = None
 
 
-class Ingredient(IngredientBase):
+class IngredientDB(IngredientBase):
     id: int
 
-    class Config:
-        orm_mode = True
+
+class RecipeIngredient(IngredientBase):
+    quantity: int
 
 
-class IngredientWithAmount(IngredientBase):
-    amount: int
+class RecipeIngredientDB(RecipeIngredient):
+    id: int
 
 
 class RecipeBase(BaseModel):
     name: str
-    ingredients: List[IngredientWithAmount]
+    servings: int
+    ingredients: List[RecipeIngredient]
 
 
-class Recipe(RecipeBase):
+class RecipeDB(RecipeBase):
     id: int
-
-    class Config:
-        orm_mode = True
+    servings: int
+    ingredients: List[RecipeIngredientDB]

@@ -2,9 +2,8 @@ from datetime import datetime
 import click
 import os
 
-from flask import current_app, g
+
 from dotenv import load_dotenv
-import psycopg2
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -33,7 +32,7 @@ class Ingredient(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[int] = mapped_column(String(50), nullable=False)
-    units: Mapped[str] = mapped_column(String(20))
+    units: Mapped[str] = mapped_column(String(20), nullable=True)
     # preferred_store: Mapped[int] = mapped_column(ForeignKey("stores.id"))
     associated_recipes = relationship(
         "IngredientRecipeBridge", back_populates="ingredient"
@@ -48,7 +47,8 @@ class Recipe(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[int] = mapped_column(String(50))
-    # servings: Mapped[int] = mapped_column(Integer)
+
+    servings: Mapped[int] = mapped_column(Integer)
     ingredients = relationship("IngredientRecipeBridge", back_populates="recipe")
 
     def __repr__(self) -> str:
@@ -58,6 +58,7 @@ class Recipe(db.Model):
 class IngredientRecipeBridge(db.Model):
     __tablename__ = "ingredients_recipes_bridge"
 
+    id: Mapped[int] = mapped_column(primary_key=True)
     recipe_id: Mapped[int] = mapped_column(ForeignKey("recipes.id"))
     ingredient_id: Mapped[int] = mapped_column(ForeignKey("ingredients.id"))
     quantity: Mapped[int] = mapped_column(Integer)
@@ -68,15 +69,15 @@ class IngredientRecipeBridge(db.Model):
         return f"Ingredient id={self.ingredient_id} appears in recipe {self.recipe_id} with quantity {self.quantity}"
 
 
-class Stores(db.Model):
-    __tablename__ = "stores"
+# class Stores(db.Model):
+#     __tablename__ = "stores"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(50), nullable=False)
-    address: Mapped[str] = mapped_column(String(75))
+#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+#     name: Mapped[str] = mapped_column(String(50), nullable=False)
+#     address: Mapped[str] = mapped_column(String(75))
 
-    def __repr__(self) -> str:
-        return f"Store {self.name} located at {self.address}"
+#     def __repr__(self) -> str:
+#         return f"Store {self.name} located at {self.address}"
 
 
 # def init_db():
