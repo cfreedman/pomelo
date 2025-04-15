@@ -14,13 +14,34 @@ def recipe_list():
     return make_response(results)
 
 
-# @app.get("/recipe/<int:id>")
-# def get_recipe(id: int):
-#     recipe = Recipe.query.filter_by(id=id).first()
-#     if recipe:
-#         return make_response({"recipe": recipe.serialize})
-#     else:
-#         return make_response({"message": "Recipe by that id not found"}, 404)
+@app.get("/recipe/<int:id>")
+def get_recipe(id: int):
+    recipe = db.session.query(Recipe).filter_by(id=id).first()
+    if recipe:
+        id = recipe.id
+        name = recipe.name
+        servings = recipe.servings
+        ingredients = []
+        for ingredient in recipe.ingredients:
+            ingredient_data = schemas.RecipeIngredientDB(
+                name=ingredient.name,
+                units=ingredient.units,
+                quantity=ingredient.quantity,
+                id=ingredient.id,
+            )
+            ingredients.append(ingredient_data)
+
+        recipe_data = schemas.RecipeDB(
+            id=id,
+            name=name,
+            servings=servings,
+            ingredients=ingredients,
+        )
+
+        return make_response(recipe_data.model_dump())
+
+    else:
+        return make_response({"message": "Recipe by that id not found"}, 404)
 
 
 @app.post("/recipe")

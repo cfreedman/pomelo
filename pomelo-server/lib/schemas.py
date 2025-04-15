@@ -28,5 +28,4 @@ class RecipeBase(BaseModel):
 
 class RecipeDB(RecipeBase):
     id: int
-    servings: int
     ingredients: List[RecipeIngredientDB]
