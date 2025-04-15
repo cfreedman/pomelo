@@ -22,11 +22,12 @@ def get_recipe(id: int):
         name = recipe.name
         servings = recipe.servings
         ingredients = []
-        for ingredient in recipe.ingredients:
+        for association in recipe.ingredient_associations:
+            ingredient = association.ingredient
             ingredient_data = schemas.RecipeIngredientDB(
                 name=ingredient.name,
                 units=ingredient.units,
-                quantity=ingredient.quantity,
+                quantity=association.quantity,
                 id=ingredient.id,
             )
             ingredients.append(ingredient_data)
@@ -81,13 +82,40 @@ def add_recipe():
 @app.put("/recipe/<int:id>")
 def update_recipe(id: int):
     data = request.get_json()
-    updated_name = data["name"]
+    recipe_data = schemas.RecipeBase(**data)
     recipe = db.session.query(Recipe).filter(Recipe.id == id).first()
     if recipe:
-        recipe.name = updated_name
+        recipe.name = recipe_data.name
+        recipe.servings = recipe_data.servings
+
+        # Clear existing associations
+        recipe.ingredient_associations.clear()
+
+        for ingredient in recipe_data.ingredients:
+            existing_ingredient = Ingredient.query.filter_by(
+                name=ingredient.name, units=ingredient.units
+            ).first()
+            if existing_ingredient:
+                bridge = IngredientRecipeBridge(
+                    recipe_id=recipe.id,
+                    ingredient_id=existing_ingredient.id,
+                    quantity=ingredient.quantity,
+                )
+                db.session.add(bridge)
+            else:
+                new_ingredient = Ingredient(
+                    name=ingredient.name, units=ingredient.units
+                )
+                db.session.add(new_ingredient)
+                db.session.flush()
+                bridge = IngredientRecipeBridge(
+                    recipe_id=recipe.id,
+                    ingredient_id=new_ingredient.id,
+                    quantity=ingredient.quantity,
+                )
+                db.session.add(bridge)
+
         db.session.commit()
-        return make_response(
-            f"Object with id {id} successfully updated with name {updated_name}"
-        )
+        return make_response(f"Recipe {recipe_data.name} successfully updated")
 
     return make_response(f"Unable to find object in database with id {id}")
