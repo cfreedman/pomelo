@@ -1,4 +1,5 @@
 import { JSX, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "./ui/button";
 import {
@@ -11,68 +12,32 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "./ui/table";
+import { Recipe, fetchAllRecipes } from "@/lib/recipes";
 
-export const recipeList: RecipeListItemProps[] = [
-  {
-    name: "Green Curry",
-    cuisine: "Thai",
-    type: "Main",
-    tags: ["Healthy"],
-  },
-  {
-    name: "Pasta Puttanesca",
-    cuisine: "Italian",
-    type: "Main",
-    tags: ["Healthy"],
-  },
-  {
-    name: "White-cut Chicken",
-    cuisine: "Cantonese",
-    type: "Main",
-    tags: ["Healthy"],
-  },
-  {
-    name: "Stuffed Tofu",
-    cuisine: "Cantonese",
-    type: "Appetizer",
-    tags: ["Healthy"],
-  },
-  {
-    name: "Roasted Pork",
-    cuisine: "Cantonese",
-    type: "Main",
-    tags: ["Healthy"],
-  },
-  {
-    name: "Pad Thai",
-    cuisine: "Thai",
-    type: "Main",
-    tags: ["Healthy"],
-  },
-  {
-    name: "Bolognese",
-    cuisine: "Italian",
-    type: "Main",
-    tags: ["Healthy"],
-  },
-];
-
-export interface RecipeListItemProps {
-  name: string;
-  cuisine: string;
-  type: string;
-  tags?: string[];
-}
-
-export interface RecipeListProps {
-  recipes: RecipeListItemProps[];
-}
-
-export default function RecipeList({ recipes }: RecipeListProps): JSX.Element {
+export default function RecipeList(): JSX.Element {
+  const { data: recipes, isLoading } = useQuery<Recipe[]>({
+    queryFn: fetchAllRecipes,
+    queryKey: ["allRecipes"],
+  });
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const cuisines = Array.from(new Set(recipes.map((recipe) => recipe.cuisine)));
-  const mealTypes = Array.from(new Set(recipes.map((recipe) => recipe.type)));
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  const cuisines = Array.from(
+    new Set(recipes?.map((recipe) => recipe.cuisine))
+  );
+  const mealTypes = Array.from(
+    new Set(
+      recipes?.reduce((filtered: string[], recipe: Recipe) => {
+        if (recipe.mealType) {
+          filtered.push(recipe.mealType);
+        }
+        return filtered;
+      }, [])
+    )
+  );
 
   return (
     <div className="flex flex-col grow bg-red-50 px-[30px] py-[50px]">
@@ -122,11 +87,13 @@ export default function RecipeList({ recipes }: RecipeListProps): JSX.Element {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {recipes.map((recipe) => (
+          {recipes?.map((recipe) => (
             <TableRow key={recipe.name}>
               <TableCell className="text-left">{recipe.name}</TableCell>
-              <TableCell className="text-left">{recipe.tags}</TableCell>
-              <TableCell className="text-left">{recipe.type}</TableCell>
+              <TableCell className="text-left">
+                {recipe.tags.map(({ name }) => name).join(", ")}
+              </TableCell>
+              <TableCell className="text-left">{recipe.mealType}</TableCell>
               <TableCell className="text-right">{recipe.cuisine}</TableCell>
             </TableRow>
           ))}
