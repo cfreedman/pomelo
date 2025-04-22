@@ -5,6 +5,7 @@ import "./App.css";
 import CalendarPage from "./pages/CalendarPage";
 import RecipesPage from "./pages/RecipesPage";
 import StoresPage from "./pages/StoresPage";
+import TestPage from "./pages/TestPage";
 import SidebarWrapper from "./pages/SidebarWrapper";
 
 const queryClient = new QueryClient();
@@ -18,6 +19,7 @@ function App() {
             <Route path="recipes" element={<RecipesPage />} />
             <Route path="stores" element={<StoresPage />} />
             <Route path="calendar" element={<CalendarPage />} />
+            <Route path="test" element={<TestPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
