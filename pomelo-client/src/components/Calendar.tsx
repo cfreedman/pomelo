@@ -1,11 +1,5 @@
-import { JSX } from "react";
+import React, { JSX } from "react";
 import { useState } from "react";
-import {
-  DndContext,
-  DragEndEvent,
-  useDraggable,
-  useDroppable,
-} from "@dnd-kit/core";
 
 import { BaseRecipe, BASE_RECIPE_DATA } from "@/lib/recipes";
 import {
@@ -15,48 +9,33 @@ import {
   WEEKDAYS,
 } from "@/lib/calendar";
 
-const RecipeItem = (recipe: BaseRecipe): React.ReactNode => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: `${recipe.id}-${recipe.name}`,
-  });
+interface RecipeItemProps {
+  name: string;
+  handleDrag: React.DragEventHandler<HTMLLIElement>;
+}
 
-  const positionStyle = transform
-    ? {
-        transform: `translate(${transform.x}px, ${transform.y}px)`,
-      }
-    : undefined;
-
+const RecipeItem = ({ name, handleDrag }: RecipeItemProps): JSX.Element => {
   return (
-    <li
-      className="text-blue-600 font-bold"
-      style={positionStyle}
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      key={recipe.id}
-    >
-      {recipe.name}
+    <li className="text-blue-600 font-bold" draggable onDragStart={handleDrag}>
+      {name}
     </li>
   );
 };
 
-const CalendarRecipeCard = (recipe: BaseRecipe): React.ReactNode => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: `${recipe.id}-${recipe.name}`,
-  });
+interface CalendarRecipeCardProps {
+  recipe: BaseRecipe;
+  handleDrag: React.DragEventHandler<HTMLDivElement>;
+}
 
-  const positionStyle = transform
-    ? {
-        transform: `translate(${transform.x}px, ${transform.y}px)`,
-      }
-    : undefined;
+const CalendarRecipeCard = ({
+  recipe,
+  handleDrag,
+}: CalendarRecipeCardProps): React.ReactNode => {
   return (
     <div
       className="my-3 py-3 px-2 w-full bg-blue-500 rounded-md"
-      style={positionStyle}
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
+      draggable
+      onDragStart={handleDrag}
     >
       <h3 className="text-white font-bold">{recipe.name}</h3>
     </div>
@@ -67,20 +46,27 @@ interface CalendarDayProps {
   weekday: Weekday;
   date: string;
   recipes: BaseRecipe[];
+  handleDrop: React.DragEventHandler<HTMLDivElement>;
+  handleDragOver: React.DragEventHandler<HTMLDivElement>;
+  handleDragRecipeCard: (
+    e: React.DragEvent,
+    recipe: BaseRecipe,
+    prevWeekday: Weekday
+  ) => void;
 }
 
 const CalendarDay = ({
   weekday,
   date,
   recipes,
+  handleDrop,
+  handleDragOver,
+  handleDragRecipeCard,
 }: CalendarDayProps): React.ReactNode => {
-  const { setNodeRef } = useDroppable({
-    id: weekday,
-  });
-
   return (
     <div
-      ref={setNodeRef}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
       className="flex flex-col px-2 grow shrink basis-[0px] h-[600px] items-center border-r-2 border-solid border-gray-100 first:border-l-2"
     >
       <div className="flex flex-col items-center justify-center bg-blue-500 rounded-full w-10 h-10 my-2">
@@ -88,7 +74,11 @@ const CalendarDay = ({
       </div>
       <h3 className="calendarHeader text-blue-500">{weekday}</h3>
       {recipes.map((recipe) => (
-        <CalendarRecipeCard {...recipe} />
+        <CalendarRecipeCard
+          key={recipe.id}
+          recipe={recipe}
+          handleDrag={(event) => handleDragRecipeCard(event, recipe, weekday)}
+        />
       ))}
       <div></div>
     </div>
@@ -111,27 +101,58 @@ export default function Calendar(): JSX.Element {
     currentWeekdays.push(day);
   }
 
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
+  const handleDragRecipeItem = (
+    e: React.DragEvent,
+    seralizedRecipe: string
+  ) => {
+    e.dataTransfer.setData("recipe", seralizedRecipe);
+  };
 
-    if (!over) return;
+  const handleDragRecipeCard = (
+    e: React.DragEvent,
+    recipe: BaseRecipe,
+    prevWeekday: Weekday
+  ) => {
+    const seralizedRecipe = `${recipe.id}-${recipe.name}`;
+    e.dataTransfer.setData("recipe", seralizedRecipe);
 
-    const currentRecipe = {
-      id: (active.id as string).split("-")[0],
-      name: (active.id as string).split("-")[1],
-    } as BaseRecipe;
-    const currentDay = over.id as Weekday;
+    setFoodCalendar((prevCalendar) => {
+      const updatedCalendar = { ...prevCalendar };
+      const remainingRecipes = updatedCalendar[prevWeekday].filter(
+        (otherRecipe) => otherRecipe.id !== recipe.id
+      );
 
-    setFoodCalendar((prevFoodCalendar) => {
-      const updatedFoodCalendar = { ...prevFoodCalendar };
-
-      updatedFoodCalendar[currentDay].push(currentRecipe);
-      return updatedFoodCalendar;
+      console.log(remainingRecipes);
+      updatedCalendar[prevWeekday] = remainingRecipes;
+      return updatedCalendar;
     });
-  }
+  };
+
+  const handleDrop = (e: React.DragEvent, weekday: Weekday) => {
+    e.preventDefault();
+    const recipeData = e.dataTransfer.getData("recipe");
+    const [id, name] = recipeData.split("-");
+    const recipe: BaseRecipe = {
+      id: id,
+      name: name,
+    };
+
+    setFoodCalendar((prevCalendar) => {
+      const updatedCalendar = { ...prevCalendar };
+      const otherRecipes = updatedCalendar[weekday].filter(
+        (recipe) => recipe.id !== id
+      );
+      updatedCalendar[weekday] = [...otherRecipes, recipe];
+      return updatedCalendar;
+    });
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <>
       <div className="flex w-[1800px] my-10">
         {WEEKDAYS.map((day, index) => (
           <CalendarDay
@@ -139,14 +160,23 @@ export default function Calendar(): JSX.Element {
             weekday={day as Weekday}
             date={currentWeekdays[index].getDate().toString()}
             recipes={foodCalendar[day as Weekday]}
+            handleDrop={(e: React.DragEvent) => handleDrop(e, day as Weekday)}
+            handleDragOver={handleDragOver}
+            handleDragRecipeCard={handleDragRecipeCard}
           />
         ))}
       </div>
       <ul>
-        {BASE_RECIPE_DATA.map(({ name, id }) => (
-          <RecipeItem name={name} id={id} />
+        {BASE_RECIPE_DATA.map(({ id, name }) => (
+          <RecipeItem
+            key={id}
+            name={name}
+            handleDrag={(e: React.DragEvent) =>
+              handleDragRecipeItem(e, `${id}-${name}`)
+            }
+          />
         ))}
       </ul>
-    </DndContext>
+    </>
   );
 }
