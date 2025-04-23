@@ -113,38 +113,49 @@ export default function Calendar(): JSX.Element {
     recipe: BaseRecipe,
     prevWeekday: Weekday
   ) => {
-    const seralizedRecipe = `${recipe.id}-${recipe.name}`;
+    const seralizedRecipe = `${recipe.id}-${recipe.name}-${prevWeekday}`;
     e.dataTransfer.setData("recipe", seralizedRecipe);
-
-    setFoodCalendar((prevCalendar) => {
-      const updatedCalendar = { ...prevCalendar };
-      const remainingRecipes = updatedCalendar[prevWeekday].filter(
-        (otherRecipe) => otherRecipe.id !== recipe.id
-      );
-
-      console.log(remainingRecipes);
-      updatedCalendar[prevWeekday] = remainingRecipes;
-      return updatedCalendar;
-    });
   };
 
   const handleDrop = (e: React.DragEvent, weekday: Weekday) => {
     e.preventDefault();
     const recipeData = e.dataTransfer.getData("recipe");
-    const [id, name] = recipeData.split("-");
-    const recipe: BaseRecipe = {
-      id: id,
-      name: name,
-    };
+    if (recipeData.split("-").length === 2) {
+      const [id, name] = recipeData.split("-");
+      const recipe: BaseRecipe = {
+        id: id,
+        name: name,
+      };
 
-    setFoodCalendar((prevCalendar) => {
-      const updatedCalendar = { ...prevCalendar };
-      const otherRecipes = updatedCalendar[weekday].filter(
-        (recipe) => recipe.id !== id
-      );
-      updatedCalendar[weekday] = [...otherRecipes, recipe];
-      return updatedCalendar;
-    });
+      setFoodCalendar((prevCalendar) => {
+        const updatedCalendar = { ...prevCalendar };
+        const otherRecipes = updatedCalendar[weekday].filter(
+          (recipe) => recipe.id !== id
+        );
+        updatedCalendar[weekday] = [...otherRecipes, recipe];
+        return updatedCalendar;
+      });
+    } else if (recipeData.split("-").length === 3) {
+      const [id, name, day] = recipeData.split("-");
+      const recipe: BaseRecipe = {
+        id: id,
+        name: name,
+      };
+      const prevWeekday = day as Weekday;
+
+      setFoodCalendar((prevCalendar) => {
+        const updatedCalendar = { ...prevCalendar };
+        const otherRecipes = updatedCalendar[weekday].filter(
+          (recipe) => recipe.id !== id
+        );
+        updatedCalendar[weekday] = [...otherRecipes, recipe];
+        const remainingRecipes = updatedCalendar[prevWeekday].filter(
+          (recipe) => recipe.id !== id
+        );
+        updatedCalendar[prevWeekday] = remainingRecipes;
+        return updatedCalendar;
+      });
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
