@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "./App.css";
 import CalendarPage from "./pages/CalendarPage";
+import GroceryListPage from "./pages/GroceryListPage";
 import RecipesPage from "./pages/RecipesPage";
 import StoresPage from "./pages/StoresPage";
 import TestPage from "./pages/TestPage";
@@ -19,6 +20,7 @@ function App() {
             <Route path="recipes" element={<RecipesPage />} />
             <Route path="stores" element={<StoresPage />} />
             <Route path="calendar" element={<CalendarPage />} />
+            <Route path="grocery-list" element={<GroceryListPage />} />
             <Route path="test" element={<TestPage />} />
           </Route>
         </Routes>
