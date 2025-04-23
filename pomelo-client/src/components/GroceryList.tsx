@@ -1,16 +1,20 @@
-import { JSX } from "react";
+import { JSX, useState } from "react";
 
 import { GroceryListIngredient } from "@/lib/grocerylist";
-import { Store } from "@/lib/stores";
 
 export interface GroceryListProps {
   groceryList: GroceryListIngredient[];
 }
 
+// type GrocerySortingField = "store" | "ingredientType";
+
 export default function GroceryList({
   groceryList,
 }: GroceryListProps): JSX.Element {
-  const storeToIngredientMap = new Map<Store, GroceryListIngredient[]>();
+  // const [sortingField, setSortingField] =
+  //   useState<GrocerySortingField>("store");
+
+  const storeToIngredientMap = new Map<string, GroceryListIngredient[]>();
 
   const anyStoreIngredients: GroceryListIngredient[] = [];
 
@@ -18,10 +22,10 @@ export default function GroceryList({
     if (!ingredient.store) {
       anyStoreIngredients.push(ingredient);
     } else {
-      if (!storeToIngredientMap.has(ingredient.store)) {
-        storeToIngredientMap.set(ingredient.store, []);
+      if (!storeToIngredientMap.has(ingredient.store.name)) {
+        storeToIngredientMap.set(ingredient.store.name, []);
       }
-      storeToIngredientMap.get(ingredient.store)?.push(ingredient);
+      storeToIngredientMap.get(ingredient.store.name)?.push(ingredient);
     }
   }
 
@@ -29,27 +33,27 @@ export default function GroceryList({
 
   return (
     <div>
-      <h1>Grocery List</h1>
+      <h1 className="mb-5">Grocery List</h1>
       <div>
-        <h3>Any Store</h3>
+        <h3 className="mb-4 mt-6">Any Store</h3>
         <ul>
           {anyStoreIngredients.map((ingredient) => (
-            <li key={ingredient.name}>
+            <li key={ingredient.name} className="flex flex-row gap-3 my-2">
               <p>{`${ingredient.quantity} ${ingredient.units}`}</p>
               <p>{ingredient.name}</p>
             </li>
           ))}
         </ul>
       </div>
-      {Array.from(storeToIngredientMap.keys()).map((store) => {
-        const associatedIngredients = storeToIngredientMap.get(store);
+      {Array.from(storeToIngredientMap.keys()).map((storeName) => {
+        const associatedIngredients = storeToIngredientMap.get(storeName);
 
         return (
-          <div key={store.name}>
-            <h3>{store.name}</h3>
+          <div key={storeName}>
+            <h3 className="mb-4 mt-6">{storeName}</h3>
             <ul>
               {associatedIngredients?.map((ingredient) => (
-                <li key={ingredient.name}>
+                <li key={ingredient.name} className="flex flex-row gap-3 my-2">
                   <p>{`${ingredient.quantity} ${ingredient.units}`}</p>
                   <p>{ingredient.name}</p>
                 </li>

@@ -1,5 +1,7 @@
 import { JSX } from "react";
 
+import StoresMap from "@/components/StoresMap";
+
 interface Store {
   name: string;
   address: string;
@@ -13,16 +15,19 @@ const storeList: Store[] = [
 
 export default function CalendarPage(): JSX.Element {
   return (
-    <div>
-      <h1>Favorite Stores</h1>
-      <ul>
-        {storeList.map(({ name, address }) => (
-          <li key={name}>
-            <h3>{name}</h3>
-            <p>{address}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <div>
+        <h1>Favorite Stores</h1>
+        <ul>
+          {storeList.map(({ name, address }) => (
+            <li key={name}>
+              <h3>{name}</h3>
+              <p>{address}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <StoresMap />
+    </>
   );
 }
