@@ -48,3 +48,10 @@ class RecipeCreate(BaseModel):
     servings: int
     tags: List[str]
     ingredients: List[RecipeIngredientCreate]
+
+
+class StoreBase(BaseModel):
+    id: int
+    name: str
+    address: str
+    geolocation: (float, float)

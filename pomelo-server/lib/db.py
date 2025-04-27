@@ -99,15 +99,66 @@ class TagRecipeBridge(db.Model):
         return f"Tag id={self.tag_id} appears in recipe {self.recipe_id}"
 
 
-# class Stores(db.Model):
-#     __tablename__ = "stores"
+class Store(db.Model):
+    __tablename__ = "stores"
 
-#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-#     name: Mapped[str] = mapped_column(String(50), nullable=False)
-#     address: Mapped[str] = mapped_column(String(75))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(50), nullable=False)
+    address: Mapped[str] = mapped_column(String(75))
+    geolocation: Mapped[(float, float)] = mapped_column(
+        Integer
+    )  # Change this type later
 
-#     def __repr__(self) -> str:
-#         return f"Store {self.name} located at {self.address}"
+    def __repr__(self) -> str:
+        return f"Store {self.name} located at {self.address}"
+
+
+# This hsould have a many to one relationship (many ingredients mapped to one store) - change this
+class IngredientStoreBridge(db.Model):
+    __tablename__ = "ingredient_store_bridge"
+
+    ingredient_id: Mapped[int] = mapped_column(
+        ForeignKey("ingredients.id"), primary_key=True
+    )
+    store_id: Mapped[int] = mapped_column(ForeignKey("stores.id"), primary_key=True)
+
+
+class MealPlan(db.Model):
+    __tablename__ = "meal_plans"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    week: Mapped[datetime] = mapped_column()  # Fill in weekly date type for this
+
+
+# Many to many for recipes appearing in weekly meal plans
+class RecipeMealPlanBridge(db.Model):
+    __tablename__ = "recipe_meal_plan_bridge"
+
+    recipe_id: Mapped[int] = mapped_column(ForeignKey("recipes.id"), primary_key=True)
+    meal_plan_id: Mapped[int] = mapped_column(
+        ForeignKey("meal_plans.id"), primary_key=True
+    )
+    amount: Mapped[int] = mapped_column(Integer, default=1)
+
+
+class ShoppingList(db.Model):
+    __tablename__ = "shopping_lists"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    week: Mapped[datetime] = mapped_column()  # Fill in weekly date type for this
+
+
+# Many to many for ingredients appearing in weekly hsopping lists
+class IngredientShoppingListBridge(db.Model):
+    __tablename__ = "ingredient_shopping_list_bridge"
+
+    ingredient_id: Mapped[int] = mapped_column(
+        ForeignKey("ingredients.id"), primary_key=True
+    )
+    shopping_list_id: Mapped[int] = mapped_column(
+        ForeignKey("shopping_lists.id"), primary_key=True
+    )
+    amount: Mapped[int] = mapped_column(Integer, default=1)
 
 
 # def init_db():

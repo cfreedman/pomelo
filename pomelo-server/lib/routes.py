@@ -1,7 +1,15 @@
 from flask import make_response, request, jsonify
 
 from .app import app
-from .db import Recipe, Ingredient, IngredientRecipeBridge, Tag, TagRecipeBridge, db
+from .db import (
+    Recipe,
+    Ingredient,
+    IngredientRecipeBridge,
+    Store,
+    Tag,
+    TagRecipeBridge,
+    db,
+)
 from . import schemas
 
 
@@ -179,3 +187,43 @@ def update_recipe(id: int):
         return make_response(f"Recipe {recipe_data.name} successfully updated")
 
     return make_response(f"Unable to find object in database with id {id}")
+
+
+@app.get("/stores")
+def all_stores():
+    stores = Store.query.all()
+    response = [schemas.StoreBase(store).model_dump() for store in stores]
+    make_response(response)
+
+
+@app.get("/stores/<int:id>")
+def get_store(id: int):
+    store = Store.query.filter_by(id=id).first()
+    if not Store:
+        make_response(f"Unable to locate store with id {id}")
+        return
+
+    make_response(schemas.StoreBase(store).model_dump())
+
+
+@app.get("/ingredients")
+def ingredient_list():
+    ingredients = Ingredient.query.all()
+    response = [
+        schemas.Ingredient(Ingredient).model_dump() for ingredient in ingredients
+    ]
+    make_response(response)
+
+
+@app.get("/ingredients/<int:id>")
+def get_ingredient(id: int):
+    ingredient = Ingredient.query.filter_by(id=id).first()
+    if not ingredient:
+        make_response(f"Unable to locate ingredient with id {id}")
+
+    make_response(schemas.Ingredient(ingredient).model_dump())
+
+
+@app.get("/shopping-list")
+def get_shopping_list():
+    pass
