@@ -1,23 +1,14 @@
 from datetime import datetime
 from typing import List
-import click
-import os
 
-
-from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey, Integer, String
+from sqlalchemy import Date, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-load_dotenv()
-db_url = os.getenv("DATABASE_URL")
+from app.database import db
 
 
 class Base(DeclarativeBase):
     pass
-
-
-db = SQLAlchemy(model_class=Base)
 
 
 class Ingredient(db.Model):
@@ -29,8 +20,11 @@ class Ingredient(db.Model):
     # preferred_store: Mapped[int] = mapped_column(ForeignKey("stores.id"))
 
     # Field to select list of ingredient-recipe-bridge rows for data stored there
-    recipe_associations: Mapped[List["IngredientRecipeBridge"]] = relationship(
-        back_populates="ingredient"
+    associated_recipes: Mapped[List["Recipe"]] = relationship(
+        "IngredientRecipeBridge", back_populates="ingredient"
+    )
+    associated_shopping_lists: Mapped[List["ShoppingList"]] = relationship(
+        "IngredientShoppingListBridge", back_populates="ingredient"
     )
 
     def __repr__(self) -> str:
@@ -43,8 +37,8 @@ class Tag(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50))
 
-    recipe_associations: Mapped[List["TagRecipeBridge"]] = relationship(
-        back_populates="tag"
+    associated_recipes: Mapped[List["TagRecipeBridge"]] = relationship(
+        "TagRecipeBridge", back_populates="tag"
     )
 
     def __repr__(self) -> str:
@@ -61,11 +55,14 @@ class Recipe(db.Model):
     servings: Mapped[int] = mapped_column(Integer)
 
     # Field to select list of ingredient-recipe-bridge rows for data stored there
-    ingredient_associations: Mapped[List["IngredientRecipeBridge"]] = relationship(
-        back_populates="recipe"
+    recipe_ingredients: Mapped[List[Ingredient]] = relationship(
+        "IngredientRecipeBridge", back_populates="recipe"
     )
-    tag_associations: Mapped[List["TagRecipeBridge"]] = relationship(
-        back_populates="recipe"
+    recipe_tags: Mapped[List[Tag]] = relationship(
+        "TagRecipeBridge", back_populates="recipe"
+    )
+    associated_meal_plans: Mapped[List["MealPlan"]] = relationship(
+        "RecipeMealPlanBridge", back_populates="recipe"
     )
 
     def __repr__(self) -> str:
@@ -80,8 +77,9 @@ class IngredientRecipeBridge(db.Model):
         ForeignKey("ingredients.id"), primary_key=True
     )
     quantity: Mapped[int] = mapped_column(Integer)
-    recipe = relationship("Recipe", back_populates="ingredient_associations")
-    ingredient = relationship("Ingredient", back_populates="recipe_associations")
+
+    recipe = relationship("Recipe", back_populates="recipe_ingredients")
+    ingredient = relationship("Ingredient", back_populates="associated_recipes")
 
     def __repr__(self) -> str:
         return f"Ingredient id={self.ingredient_id} appears in recipe {self.recipe_id} with quantity {self.quantity}"
@@ -105,9 +103,8 @@ class Store(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     address: Mapped[str] = mapped_column(String(75))
-    geolocation: Mapped[(float, float)] = mapped_column(
-        Integer
-    )  # Change this type later
+    latitude: Mapped[float] = mapped_column(Float)
+    longitude: Mapped[float] = mapped_column(Float)
 
     def __repr__(self) -> str:
         return f"Store {self.name} located at {self.address}"
@@ -122,12 +119,21 @@ class IngredientStoreBridge(db.Model):
     )
     store_id: Mapped[int] = mapped_column(ForeignKey("stores.id"), primary_key=True)
 
+    ingredient = relationship("Ingredient", back_populates="ingredient_stores")
+    store = relationship("Store", back_populates="store_ingredients")
+
 
 class MealPlan(db.Model):
     __tablename__ = "meal_plans"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    week: Mapped[datetime] = mapped_column()  # Fill in weekly date type for this
+    week_start: Mapped[datetime] = mapped_column(
+        Date
+    )  # Represents the Sunday of the week
+
+    recipes: Mapped[List[Recipe]] = relationship(
+        "RecipeMealPlanBridge", back_populates="meal_plan"
+    )
 
 
 # Many to many for recipes appearing in weekly meal plans
@@ -140,12 +146,21 @@ class RecipeMealPlanBridge(db.Model):
     )
     amount: Mapped[int] = mapped_column(Integer, default=1)
 
+    recipe: Mapped[Recipe] = relationship(
+        "Recipe", back_populates="associated_meal_plans"
+    )
+    meal_plan: Mapped[MealPlan] = relationship("MealPlan", back_populates="recipes")
+
 
 class ShoppingList(db.Model):
     __tablename__ = "shopping_lists"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    week: Mapped[datetime] = mapped_column()  # Fill in weekly date type for this
+    week_start: Mapped[datetime] = mapped_column(Date)
+
+    items: Mapped[List[Ingredient]] = relationship(
+        "IngredientShoppingListBridge", back_populated="shopping_list"
+    )
 
 
 # Many to many for ingredients appearing in weekly hsopping lists
@@ -160,28 +175,9 @@ class IngredientShoppingListBridge(db.Model):
     )
     amount: Mapped[int] = mapped_column(Integer, default=1)
 
-
-# def init_db():
-#     db = get_db()
-
-
-# @click.command("init-db")
-# def init_db_command():
-#     init_db()
-#     click.echo("Initialized database...")
-
-
-# def get_db():
-#     if "db" not in g:
-#         g.db = psycopg2.connect(db_url)
-
-#     return g.db
-
-
-# def close_db():
-#     pass
-
-
-# def init_app(app):
-#     app.teardown_appcontext(close_db)
-#     app.cli.add_command(init_db_command)
+    ingredient: Mapped[Ingredient] = relationship(
+        "Ingredient", back_populateds="associated_shopping_lists"
+    )
+    shopping_list: Mapped[ShoppingList] = relationship(
+        "ShoppingList", back_populates="items"
+    )

@@ -1,7 +1,6 @@
 from flask import make_response, request, jsonify
 
-from .app import app
-from .db import (
+from .database import (
     Recipe,
     Ingredient,
     IngredientRecipeBridge,
@@ -10,7 +9,9 @@ from .db import (
     TagRecipeBridge,
     db,
 )
-from . import schemas
+from . import create_app, schemas
+
+app = create_app()
 
 
 @app.get("/recipe")

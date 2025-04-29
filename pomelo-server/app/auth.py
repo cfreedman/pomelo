@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, g, redirect, request, url_for, session
 import functools
 
-from db import get_db
+from app.database import get_db
 
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
