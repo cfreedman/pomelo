@@ -144,7 +144,7 @@ class RecipeMealPlanBridge(db.Model):
     meal_plan_id: Mapped[int] = mapped_column(
         ForeignKey("meal_plans.id"), primary_key=True
     )
-    amount: Mapped[int] = mapped_column(Integer, default=1)
+    quantity: Mapped[int] = mapped_column(Integer, default=1)
 
     recipe: Mapped[Recipe] = relationship(
         "Recipe", back_populates="associated_meal_plans"
@@ -173,7 +173,7 @@ class IngredientShoppingListBridge(db.Model):
     shopping_list_id: Mapped[int] = mapped_column(
         ForeignKey("shopping_lists.id"), primary_key=True
     )
-    amount: Mapped[int] = mapped_column(Integer, default=1)
+    quantity: Mapped[int] = mapped_column(Integer, default=1)
 
     ingredient: Mapped[Ingredient] = relationship(
         "Ingredient", back_populateds="associated_shopping_lists"
