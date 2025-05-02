@@ -2,7 +2,10 @@ from typing import List, Optional
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
-from app.schema.ingredients import RecipeIngredient, RecipeIngredientCreate
+from app.schema.ingredients import (
+    IngredientCreate,
+    IngredientWithAmount,
+)
 from app.schema.tags import Tag
 
 
@@ -17,7 +20,7 @@ class Recipe(BaseModel):
     )
     servings: int
     tags: List[Tag]
-    ingredients: List[RecipeIngredient]
+    ingredients: List[IngredientWithAmount]
 
 
 class RecipeCreate(BaseModel):
@@ -30,7 +33,7 @@ class RecipeCreate(BaseModel):
     )
     servings: int
     tags: List[str]
-    ingredients: List[RecipeIngredientCreate]
+    ingredients: List[IngredientCreate]
 
 
 class RecipeUpdate(RecipeCreate):

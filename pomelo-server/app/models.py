@@ -1,14 +1,10 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import Date, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app import db
-
-
-class Base(DeclarativeBase):
-    pass
 
 
 class Ingredient(db.Model):
@@ -25,6 +21,11 @@ class Ingredient(db.Model):
     )
     associated_shopping_lists: Mapped[List["ShoppingList"]] = relationship(
         "IngredientShoppingListBridge", back_populates="ingredient"
+    )
+
+    store_id: Mapped[Optional[int]] = mapped_column(ForeignKey("stores.id"))
+    ingredient_store: Mapped[Optional["Store"]] = relationship(
+        "Store", back_populates="store_ingredients"
     )
 
     def __repr__(self) -> str:
@@ -90,8 +91,8 @@ class TagRecipeBridge(db.Model):
 
     recipe_id: Mapped[int] = mapped_column(ForeignKey("recipes.id"), primary_key=True)
     tag_id: Mapped[int] = mapped_column(ForeignKey("tags.id"), primary_key=True)
-    recipe = relationship("Recipe", back_populates="tag_associations")
-    tag = relationship("Tag", back_populates="recipe_associations")
+    recipe = relationship("Recipe", back_populates="recipe_tags")
+    tag = relationship("Tag", back_populates="associated_recipes")
 
     def __repr__(self) -> str:
         return f"Tag id={self.tag_id} appears in recipe {self.recipe_id}"
@@ -106,21 +107,12 @@ class Store(db.Model):
     latitude: Mapped[float] = mapped_column(Float)
     longitude: Mapped[float] = mapped_column(Float)
 
+    store_ingredients: Mapped[List[Ingredient]] = relationship(
+        "Ingredient", back_populates="ingredient_store"
+    )
+
     def __repr__(self) -> str:
         return f"Store {self.name} located at {self.address}"
-
-
-# This hsould have a many to one relationship (many ingredients mapped to one store) - change this
-class IngredientStoreBridge(db.Model):
-    __tablename__ = "ingredient_store_bridge"
-
-    ingredient_id: Mapped[int] = mapped_column(
-        ForeignKey("ingredients.id"), primary_key=True
-    )
-    store_id: Mapped[int] = mapped_column(ForeignKey("stores.id"), primary_key=True)
-
-    ingredient = relationship("Ingredient", back_populates="ingredient_stores")
-    store = relationship("Store", back_populates="store_ingredients")
 
 
 class MealPlan(db.Model):
@@ -159,7 +151,7 @@ class ShoppingList(db.Model):
     week_start: Mapped[datetime] = mapped_column(Date)
 
     items: Mapped[List[Ingredient]] = relationship(
-        "IngredientShoppingListBridge", back_populated="shopping_list"
+        "IngredientShoppingListBridge", back_populates="shopping_list"
     )
 
 
@@ -176,7 +168,7 @@ class IngredientShoppingListBridge(db.Model):
     quantity: Mapped[int] = mapped_column(Integer, default=1)
 
     ingredient: Mapped[Ingredient] = relationship(
-        "Ingredient", back_populateds="associated_shopping_lists"
+        "Ingredient", back_populates="associated_shopping_lists"
     )
     shopping_list: Mapped[ShoppingList] = relationship(
         "ShoppingList", back_populates="items"
