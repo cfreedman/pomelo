@@ -8,10 +8,10 @@ from app.schema.ingredients import IngredientWithAmount, IngredientWithAmountCre
 class ShoppingList(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    week: datetime
+    week_start: datetime
     items: List[IngredientWithAmount]
 
 
 class ShoppingListCreate(BaseModel):
-    week: datetime
+    week_start: datetime
     items: List[IngredientWithAmountCreate]

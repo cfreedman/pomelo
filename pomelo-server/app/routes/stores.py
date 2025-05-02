@@ -28,19 +28,23 @@ def create_store():
     new_store = Store(**store_data.model_dump())
     db.session.add(new_store)
     db.session.commit()
+    db.session.refresh(new_store)
+
+    return jsonify(schema.Store(new_store).model_dump()), 201
 
 
 @stores_bp.put("/<int:id>")
 def update_store_by_id(id: int):
     store = Store.query.get_or_404(id)
     data = request.get_json()
-    store_data = schema.Store.model_validate(**data)
+    store_data = schema.StoreCreate.model_validate(**data)
 
-    for field, value in schema.Store.model_dump():
+    for field, value in store_data.model_dump():
         store.field = value
     db.session.commit()
+    db.session.refresh(store)
 
-    return jsonify(Store(store).model_dump()), 200
+    return jsonify(store_data), 200
 
 
 @stores_bp.delete("/<int:id>")

@@ -4,7 +4,7 @@ from typing import List
 from sqlalchemy import Date, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from app.database import db
+from app import db
 
 
 class Base(DeclarativeBase):
