@@ -1,3 +1,6 @@
+CREATE DATABASE pomelo;
+
+\c pomelo;
 
 CREATE TABLE IF NOT EXISTS stores (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -43,12 +46,12 @@ CREATE TABLE IF NOT EXISTS tag_recipe_bridge (
 CREATE TABLE IF NOT EXISTS meal_plans (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     week_start DATE NOT NULL
-)
+);
 
 CREATE TABLE IF NOT EXISTS recipe_meal_plan_bridge (
-    recipe_id INTEGER REFERENCES recipes(id)
+    recipe_id INTEGER REFERENCES recipes(id),
     meal_plan_id INTEGER REFERENCES meal_plans(id),
-    PRIMARY KEY (recipe_id, meal_plan_id)
+    PRIMARY KEY (recipe_id, meal_plan_id),
     quantity INTEGER NOT NULL DEFAULT 1
 );
 
@@ -64,7 +67,7 @@ CREATE TABLE IF NOT EXISTS ingredient_shopping_list_bridge (
     quantity INTEGER NOT NULL DEFAULT 1
 );
 
-INSERT INTO ingredient (name, units) VALUES
+INSERT INTO ingredients (name, units) VALUES
 ('Chicken Breast', 'grams'),
 ('Broccoli', 'grams'),
 ('Rice', 'grams'),
@@ -103,4 +106,39 @@ INSERT INTO meal_plans (week_start) VALUES
 INSERT INTO shopping_lists (week_start) VALUES
 ('2025-02-23'),
 ('2025-02-09');
+
+INSERT INTO ingredient_recipe_bridge (recipe_id, ingredient_id, quantity) VALUES
+(1, 1, 500),
+(1, 2, 200),
+(1, 4, 30),
+(2, 9, 300),
+(2, 8, 1),
+(3, 1, 300),
+(3, 7, 2),
+(4, 2, 150),
+(4, 6, 5),
+(5, 8, 2);
+
+INSERT INTO tag_recipe_bridge (recipe_id, tag_id) VALUES
+(1, 1),
+(1, 2),
+(2, 3),
+(3, 1),
+(4, 2),
+(5, 3);
+
+INSERT INTO ingredient_shopping_list_bridge (ingredient_id, shopping_list_id, quantity) VALUES
+(1, 1, 500),
+(2, 1, 200),
+(3, 1, 300),
+(4, 2, 30),
+(5, 2, 5),
+(6, 2, 10);
+
+INSERT INTO recipe_meal_plan_bridge (recipe_id, meal_plan_id, quantity) VALUES
+(1, 1, 2),
+(2, 1, 1),
+(3, 2, 3),
+(4, 2, 4),
+(5, 1, 1);
 

@@ -11,8 +11,9 @@ recipes_bp = Blueprint("recipes", __name__)
 
 @recipes_bp.get("/")
 def get_recipes():
+    print("Fetching all recipes")
     recipes = Recipe.query.all()
-    result = [schema.Recipe.model_validate(**recipe).model_dump() for recipe in recipes]
+    result = [schema.Recipe.model_validate(recipe).model_dump() for recipe in recipes]
 
     return jsonify(result)
 
@@ -20,7 +21,7 @@ def get_recipes():
 @recipes_bp.get("/<int:id>")
 def get_recipe_by_id(id: int):
     recipe = Recipe.query.get_or_404(id)
-    result = schema.Recipe.model_validate(**recipe).model_dump()
+    result = schema.Recipe.model_validate(recipe).model_dump()
 
     return jsonify(result)
 

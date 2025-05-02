@@ -5,6 +5,9 @@ from sqlalchemy import Date, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app import db
+from app.schema.ingredients import Ingredient as IngredientSchema
+from app.schema.tags import Tag as TagSchema
+from app.schema.recipes import Recipe as RecipeSchema
 
 
 class Ingredient(db.Model):
@@ -31,6 +34,9 @@ class Ingredient(db.Model):
     def __repr__(self) -> str:
         return f"Ingredient id={self.id}, name={self.name}"
 
+    def to_ingredient_schema(self) -> IngredientSchema:
+        return IngredientSchema(id=self.id, name=self.name, units=self.units)
+
 
 class Tag(db.Model):
     __tablename__ = "tags"
@@ -44,6 +50,9 @@ class Tag(db.Model):
 
     def __repr__(self) -> str:
         return f"Tag id={self.id}, name={self.name}"
+
+    def to_tag_schema(self) -> TagSchema:
+        return TagSchema(id=self.id, name=self.name)
 
 
 class Recipe(db.Model):
@@ -68,6 +77,9 @@ class Recipe(db.Model):
 
     def __repr__(self) -> str:
         return f"Recipe id={self.id}, name={self.name}"
+    
+    def to_recipe_schema(self) -> RecipeSchema
+        tag = [tag.to_tag_schema() for tag in self.recipe_tags]
 
 
 class IngredientRecipeBridge(db.Model):
