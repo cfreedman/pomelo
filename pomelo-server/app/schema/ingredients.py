@@ -19,7 +19,9 @@ class IngredientCreate(BaseModel):
 class IngredientWithAmount(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    ingredient: Ingredient
+    id: int
+    name: str
+    units: Optional[str] = None
     quantity: int
 
 

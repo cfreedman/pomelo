@@ -9,9 +9,9 @@ ingredients_bp = Blueprint("ingredients", __name__)
 
 @ingredients_bp.get("/")
 def get_ingredients():
-    ingredients = Ingredient.query.all()
+    ingredients = db.session.query(Ingredient).all()
     result = [
-        schema.Ingredient.model_validate(**ingredient).model_dump()
+        schema.Ingredient.model_validate(ingredient.to_ingredient_schema()).model_dump()
         for ingredient in ingredients
     ]
 
@@ -20,36 +20,47 @@ def get_ingredients():
 
 @ingredients_bp.get("/<int:id>")
 def get_ingredient_by_id(id: int):
-    ingredient = Ingredient.query.get_or_404()
-    result = schema.Ingredient.model_validate(**ingredient).model_dump()
+    ingredient = Ingredient.query.get_or_404(id)
+    response = schema.Ingredient.model_validate(
+        ingredient.to_ingredient_schema()
+    ).model_dump()
 
-    return jsonify(result)
+    return jsonify(response)
 
 
 @ingredients_bp.post("/")
 def create_ingredient():
     data = request.get_json()
-    ingredient_data = schema.Ingredient.model_validate(**data)
+    ingredient_data = schema.IngredientCreate.model_validate(data)
 
     new_ingredient = Ingredient()
     new_ingredient.name = ingredient_data.name
     new_ingredient.units = ingredient_data.units
 
+    db.session.add(new_ingredient)
     db.session.commit()
-    return jsonify(ingredient_data), 201
+
+    response = schema.Ingredient.model_validate(
+        new_ingredient.to_ingredient_schema()
+    ).model_dump()
+    return jsonify(response), 201
 
 
 @ingredients_bp.put("/<int:id>")
 def update_ingredient_by_id(id: int):
     data = request.get_json()
-    ingredient_data = schema.IngredientCreate.model_validate(**data)
+    ingredient_data = schema.IngredientCreate.model_validate(data)
     ingredient = Ingredient.query.get_or_404(id)
 
     ingredient.name = ingredient_data.name
     ingredient.units = ingredient_data.units
 
     db.session.commit()
-    return jsonify(ingredient_data), 201
+
+    response = schema.Ingredient.model_validate(
+        ingredient.to_ingredient_schema()
+    ).model_dump()
+    return jsonify(response), 201
 
 
 @ingredients_bp.delete("/<int:id>")

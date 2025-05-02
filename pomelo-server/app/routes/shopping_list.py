@@ -11,7 +11,9 @@ shopping_list_bp = Blueprint("shopping-list", __name__)
 def get_shopping_list_by_id(id: int):
     shopping_list = ShoppingList.query.get_or_404(id)
 
-    response = schema.ShoppingList.model_validate(**shopping_list).model_dump()
+    response = schema.ShoppingList.model_validate(
+        shopping_list.to_shopping_list_schema()
+    ).model_dump()
     return jsonify(response), 201
 
 

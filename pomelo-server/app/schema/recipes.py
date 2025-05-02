@@ -3,8 +3,8 @@ from typing import List, Optional
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from app.schema.ingredients import (
-    IngredientCreate,
     IngredientWithAmount,
+    IngredientWithAmountCreate,
 )
 from app.schema.tags import Tag
 
@@ -33,8 +33,9 @@ class RecipeCreate(BaseModel):
     )
     servings: int
     tags: List[str]
-    ingredients: List[IngredientCreate]
+    ingredients: List[IngredientWithAmountCreate]
 
 
-class RecipeUpdate(RecipeCreate):
-    id: int
+# Don't need just specify id in API hit
+# class RecipeUpdate(RecipeCreate):
+#     id: int

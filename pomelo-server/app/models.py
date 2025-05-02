@@ -5,9 +5,12 @@ from sqlalchemy import Date, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app import db
-from app.schema.ingredients import Ingredient as IngredientSchema
+from app.schema.ingredients import Ingredient as IngredientSchema, IngredientWithAmount
 from app.schema.tags import Tag as TagSchema
 from app.schema.recipes import Recipe as RecipeSchema
+from app.schema.stores import Store as StoreSchema
+from app.schema.meal_plan import MealPlan as MealPlanSchema
+from app.schema.shopping_list import ShoppingList as ShoppingListSchema
 
 
 class Ingredient(db.Model):
@@ -19,16 +22,20 @@ class Ingredient(db.Model):
     # preferred_store: Mapped[int] = mapped_column(ForeignKey("stores.id"))
 
     # Field to select list of ingredient-recipe-bridge rows for data stored there
-    associated_recipes: Mapped[List["Recipe"]] = relationship(
-        "IngredientRecipeBridge", back_populates="ingredient"
+    recipe_links: Mapped[List["IngredientRecipeBridge"]] = relationship(
+        "IngredientRecipeBridge",
+        back_populates="ingredient",
+        cascade="all, delete-orphan",
     )
-    associated_shopping_lists: Mapped[List["ShoppingList"]] = relationship(
-        "IngredientShoppingListBridge", back_populates="ingredient"
+    shopping_list_links: Mapped[List["IngredientShoppingListBridge"]] = relationship(
+        "IngredientShoppingListBridge",
+        back_populates="ingredient",
+        cascade="all, delete-orphan",
     )
 
     store_id: Mapped[Optional[int]] = mapped_column(ForeignKey("stores.id"))
-    ingredient_store: Mapped[Optional["Store"]] = relationship(
-        "Store", back_populates="store_ingredients"
+    store: Mapped[Optional["Store"]] = relationship(
+        "Store", back_populates="ingredients"
     )
 
     def __repr__(self) -> str:
@@ -44,8 +51,8 @@ class Tag(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50))
 
-    associated_recipes: Mapped[List["TagRecipeBridge"]] = relationship(
-        "TagRecipeBridge", back_populates="tag"
+    recipes: Mapped[List["Recipe"]] = relationship(
+        "Recipe", secondary="tag_recipe_bridge", back_populates="tags"
     )
 
     def __repr__(self) -> str:
@@ -65,21 +72,44 @@ class Recipe(db.Model):
     servings: Mapped[int] = mapped_column(Integer)
 
     # Field to select list of ingredient-recipe-bridge rows for data stored there
-    recipe_ingredients: Mapped[List[Ingredient]] = relationship(
-        "IngredientRecipeBridge", back_populates="recipe"
+    ingredient_links: Mapped[List["IngredientRecipeBridge"]] = relationship(
+        "IngredientRecipeBridge", back_populates="recipe", cascade="all, delete-orphan"
     )
-    recipe_tags: Mapped[List[Tag]] = relationship(
-        "TagRecipeBridge", back_populates="recipe"
+    tags: Mapped[List[Tag]] = relationship(
+        "Tag", secondary="tag_recipe_bridge", back_populates="recipes"
     )
-    associated_meal_plans: Mapped[List["MealPlan"]] = relationship(
-        "RecipeMealPlanBridge", back_populates="recipe"
+    meal_plan_links: Mapped[List["RecipeMealPlanBridge"]] = relationship(
+        "RecipeMealPlanBridge", back_populates="recipe", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
         return f"Recipe id={self.id}, name={self.name}"
-    
-    def to_recipe_schema(self) -> RecipeSchema
-        tag = [tag.to_tag_schema() for tag in self.recipe_tags]
+
+    def to_recipe_schema(self) -> RecipeSchema:
+        tags = [tag.to_tag_schema() for tag in self.tags]
+        ingredients = []
+        for ingredient_link in self.ingredient_links:
+            quantity = ingredient_link.quantity
+            id, name, units = (
+                ingredient_link.ingredient.id,
+                ingredient_link.ingredient.name,
+                ingredient_link.ingredient.units,
+            )
+
+            ingredients.append(
+                IngredientWithAmount(id=id, name=name, units=units, quantity=quantity)
+            )
+
+        recipe = RecipeSchema(
+            id=self.id,
+            name=self.name,
+            cuisine=self.cuisine,
+            meal_type=self.meal_type,
+            servings=self.servings,
+            tags=tags,
+            ingredients=ingredients,
+        )
+        return recipe
 
 
 class IngredientRecipeBridge(db.Model):
@@ -91,23 +121,18 @@ class IngredientRecipeBridge(db.Model):
     )
     quantity: Mapped[int] = mapped_column(Integer)
 
-    recipe = relationship("Recipe", back_populates="recipe_ingredients")
-    ingredient = relationship("Ingredient", back_populates="associated_recipes")
+    recipe = relationship("Recipe", back_populates="ingredient_links")
+    ingredient = relationship("Ingredient", back_populates="recipe_links")
 
     def __repr__(self) -> str:
         return f"Ingredient id={self.ingredient_id} appears in recipe {self.recipe_id} with quantity {self.quantity}"
 
 
-class TagRecipeBridge(db.Model):
-    __tablename__ = "tag_recipe_bridge"
-
-    recipe_id: Mapped[int] = mapped_column(ForeignKey("recipes.id"), primary_key=True)
-    tag_id: Mapped[int] = mapped_column(ForeignKey("tags.id"), primary_key=True)
-    recipe = relationship("Recipe", back_populates="recipe_tags")
-    tag = relationship("Tag", back_populates="associated_recipes")
-
-    def __repr__(self) -> str:
-        return f"Tag id={self.tag_id} appears in recipe {self.recipe_id}"
+tag_recipe_bridge = db.Table(
+    "tag_recipe_bridge",
+    db.Column("recipe_id", ForeignKey("recipes.id"), primary_key=True),
+    db.Column("tag_id", ForeignKey("tags.id"), primary_key=True),
+)
 
 
 class Store(db.Model):
@@ -119,12 +144,14 @@ class Store(db.Model):
     latitude: Mapped[float] = mapped_column(Float)
     longitude: Mapped[float] = mapped_column(Float)
 
-    store_ingredients: Mapped[List[Ingredient]] = relationship(
-        "Ingredient", back_populates="ingredient_store"
+    ingredients: Mapped[List[Ingredient]] = relationship(
+        "Ingredient", back_populates="store"
     )
 
     def __repr__(self) -> str:
         return f"Store {self.name} located at {self.address}"
+
+    # def to_store_schema(self) -> StoreSchema:
 
 
 class MealPlan(db.Model):
@@ -135,9 +162,17 @@ class MealPlan(db.Model):
         Date
     )  # Represents the Sunday of the week
 
-    recipes: Mapped[List[Recipe]] = relationship(
-        "RecipeMealPlanBridge", back_populates="meal_plan"
+    recipe_links: Mapped[List["RecipeMealPlanBridge"]] = relationship(
+        "RecipeMealPlanBridge", back_populates="meal_plan", cascade="all, delete-orphan"
     )
+
+    def to_meal_plan_schema(self):
+        items = []
+        for link in self.recipe_links:
+            recipe = link.recipe.to_recipe_schema()
+            items.append(recipe)
+
+        return MealPlanSchema(week_start=self.week_start, items=items)
 
 
 # Many to many for recipes appearing in weekly meal plans
@@ -150,10 +185,10 @@ class RecipeMealPlanBridge(db.Model):
     )
     quantity: Mapped[int] = mapped_column(Integer, default=1)
 
-    recipe: Mapped[Recipe] = relationship(
-        "Recipe", back_populates="associated_meal_plans"
+    recipe: Mapped[Recipe] = relationship("Recipe", back_populates="meal_plan_links")
+    meal_plan: Mapped[MealPlan] = relationship(
+        "MealPlan", back_populates="recipe_links"
     )
-    meal_plan: Mapped[MealPlan] = relationship("MealPlan", back_populates="recipes")
 
 
 class ShoppingList(db.Model):
@@ -162,9 +197,25 @@ class ShoppingList(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     week_start: Mapped[datetime] = mapped_column(Date)
 
-    items: Mapped[List[Ingredient]] = relationship(
-        "IngredientShoppingListBridge", back_populates="shopping_list"
+    ingredient_links: Mapped[List["IngredientShoppingListBridge"]] = relationship(
+        "IngredientShoppingListBridge",
+        back_populates="shopping_list",
+        cascade="all, delete-orphan",
     )
+
+    def to_shopping_list_schema(self):
+        items = []
+        for link in self.ingredient_links:
+            quantity = link.quantity
+            ingredient = IngredientWithAmount(
+                id=link.ingredient.id,
+                name=link.ingredient.name,
+                units=link.ingredient.units,
+                quantity=quantity,
+            )
+            items.append(ingredient)
+
+        return ShoppingListSchema(week_start=self.week_start, items=items)
 
 
 # Many to many for ingredients appearing in weekly hsopping lists
@@ -180,8 +231,8 @@ class IngredientShoppingListBridge(db.Model):
     quantity: Mapped[int] = mapped_column(Integer, default=1)
 
     ingredient: Mapped[Ingredient] = relationship(
-        "Ingredient", back_populates="associated_shopping_lists"
+        "Ingredient", back_populates="shopping_list_links"
     )
     shopping_list: Mapped[ShoppingList] = relationship(
-        "ShoppingList", back_populates="items"
+        "ShoppingList", back_populates="ingredient_links"
     )

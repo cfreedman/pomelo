@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from app.models import Ingredient, IngredientRecipeBridge, Recipe, Tag, TagRecipeBridge
+from app.models import Ingredient, IngredientRecipeBridge, Recipe, Tag
 from app.schema.recipes import RecipeCreate
 
 
@@ -35,20 +35,14 @@ def create_new_recipe(recipe_data: RecipeCreate, db: SQLAlchemy) -> Recipe:
         )
         db.session.add(bridge)
 
-    for tag in recipe_data.tags:
-        existing_tag = Tag.query.filter_by(name=tag).first()
-        if existing_tag:
-            tag_id = existing_tag.id
-        else:
-            new_tag = Tag(name=tag)
-            db.session.add(new_tag)
+    for tag_name in recipe_data.tags:
+        tag = Tag.query.filter_by(name=tag_name).first()
+        if not tag:
+            tag = Tag(name=tag_name)
+            db.session.add(tag)
             db.session.flush()
-            tag_id = new_tag.id
-        bridge = TagRecipeBridge(
-            recipe_id=new_recipe.id,
-            tag_id=tag_id,
-        )
-        db.session.add(bridge)
+
+        tag.recipes.append(new_recipe)
 
     db.session.commit()
 
@@ -63,7 +57,9 @@ def update_existing_recipe(
     recipe.cuisine = new_recipe_data.cuisine
     recipe.meal_type = new_recipe_data.meal_type
     recipe.servings = new_recipe_data.servings
-    recipe.ingredient_associations.clear()
+    recipe.ingredient_links.clear()
+
+    db.session.flush()
 
     for ingredient in new_recipe_data.ingredients:
         existing_ingredient = Ingredient.query.filter_by(
@@ -83,19 +79,15 @@ def update_existing_recipe(
         )
         db.session.add(bridge)
 
-    recipe.tag_associations.clear()
-    for tag in new_recipe_data.tags:
-        existing_tag = Tag.query.filter_by(name=tag).first()
-        if existing_tag:
-            tag_id = existing_tag.id
-        else:
-            new_tag = Tag(name=tag)
-            db.session.add(new_tag)
+    recipe.tags.clear()
+    for tag_name in new_recipe_data.tags:
+        tag = Tag.query.filter_by(name=tag_name).first()
+        if not tag:
+            tag = Tag(name=tag_name)
+            db.session.add(tag)
             db.session.flush()
-            tag_id = new_tag.id
-        bridge = TagRecipeBridge(
-            recipe_id=recipe.id,
-            tag_id=tag_id,
-        )
-    db.session.add(bridge)
+
+        tag.recipes.append(recipe)
+
     db.session.commit()
+    return recipe

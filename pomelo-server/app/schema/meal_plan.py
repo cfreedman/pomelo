@@ -2,16 +2,16 @@ from datetime import datetime
 from typing import List
 from pydantic import BaseModel, ConfigDict
 
-from app.schema.ingredients import IngredientWithAmount, IngredientWithAmountCreate
+from app.schema.recipes import Recipe, RecipeCreate
 
 
-class ShoppingList(BaseModel):
+class MealPlan(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    week: datetime
-    items: List[IngredientWithAmount]
+    week_start: datetime
+    items: List[Recipe]
 
 
-class ShoppingListCreate(BaseModel):
-    week: datetime
-    items: List[IngredientWithAmountCreate]
+class MealPlanCreate(BaseModel):
+    week_start: datetime
+    items: List[RecipeCreate]
