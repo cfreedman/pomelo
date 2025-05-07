@@ -1,14 +1,15 @@
-import { JSX, useRef, useState } from "react";
+import { JSX, useState, useContext } from "react";
 
 import { SearchBox } from "@mapbox/search-js-react";
-
-import Map, { MapRef } from "react-map-gl/mapbox";
+import Map from "react-map-gl/mapbox";
+import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { MapContext } from "@/pages/StoresPage";
 
 export default function StoresMap(): JSX.Element {
-  const mapRef = useRef<MapRef>();
-  const [seachValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const [mapLoaded, setMapLoaded] = useState(false);
+  const mapRef = useContext(MapContext);
 
   const philadelphiaView = {
     longitude: -75.16,
@@ -17,15 +18,19 @@ export default function StoresMap(): JSX.Element {
   };
 
   return (
-    <div>
+    <div className="h-[800px] relative">
+      {/* @ts-expect-error I don't know why this error is happening with SearchBox*/}
       <SearchBox
         accessToken={import.meta.env.VITE_MAPBOX_TOKEN}
         options={{
           language: "en",
           country: "us",
         }}
+        map={mapRef.current?.getMap()}
+        mapboxgl={mapboxgl}
+        value={searchValue}
         onChange={(e) => setSearchValue(e)}
-        marker
+        marker={true}
       />
       <Map
         ref={mapRef}
