@@ -7,7 +7,7 @@ import {
   FoodCalendar,
   Weekday,
   WEEKDAYS,
-} from "@/lib/calendar";
+} from "@/lib/meal_plan";
 
 interface RecipeItemProps {
   name: string;

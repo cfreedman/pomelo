@@ -28,7 +28,7 @@ def create_app():
 
         flask_app.register_blueprint(ingredients_bp, url_prefix="/ingredients")
         flask_app.register_blueprint(stores_bp, url_prefix="/stores")
-        flask_app.register_blueprint(shopping_list_bp, url_prefix="/shopping-list")
+        flask_app.register_blueprint(shopping_list_bp, url_prefix="/shopping-lists")
         flask_app.register_blueprint(recipes_bp, url_prefix="/recipes")
         db.create_all()
 

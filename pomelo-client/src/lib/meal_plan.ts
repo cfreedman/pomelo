@@ -8,16 +8,9 @@ export const WEEKDAYS = [
   "Thursday",
   "Friday",
   "Saturday",
-];
+] as const;
 
-export type Weekday =
-  | "Sunday"
-  | "Monday"
-  | "Tuesday"
-  | "Wednesday"
-  | "Thursday"
-  | "Friday"
-  | "Saturday";
+export type Weekday = (typeof WEEKDAYS)[number];
 
 export type FoodCalendar = Record<Weekday, BaseRecipe[]>;
 
@@ -30,3 +23,8 @@ export const BLANK_CALENDAR: FoodCalendar = {
   Friday: [],
   Saturday: [],
 };
+
+export interface MealPlan {
+  weekStart: Date;
+  items: FoodCalendar;
+}

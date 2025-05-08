@@ -1,7 +1,7 @@
 import { JSX } from "react";
 
 import GroceryList from "@/components/GroceryList";
-import { GroceryListIngredient } from "@/lib/grocerylist";
+import { GroceryListIngredient } from "@/lib/shopping_list";
 
 const groceryList: GroceryListIngredient[] = [
   {

@@ -1,6 +1,6 @@
 import { JSX, useState } from "react";
 
-import { GroceryListIngredient } from "@/lib/grocerylist";
+import { GroceryListIngredient } from "@/lib/shopping_list";
 
 export interface GroceryListProps {
   groceryList: GroceryListIngredient[];

@@ -1,5 +1,7 @@
 import { BASE_URL } from "@/config/constants";
 
+// Data structures for data types coming in from backend
+
 export interface Tag {
   id: string;
   name: string;
@@ -11,18 +13,29 @@ export interface Ingredient {
   units?: string;
 }
 
-export type RecipeIngredient = Ingredient & {
+export interface IngredientWithAmount extends Ingredient {
   quantity: number;
-};
+}
 
 export interface Recipe {
   id: string;
   name: string;
   cuisine?: string;
   mealType?: string;
+  servings: number;
   tags: Tag[];
-  ingredients: RecipeIngredient[];
+  ingredients: IngredientWithAmount[];
 }
+
+// Data type to send to backend for creation or updating
+
+export type IngredientCreate = Omit<Ingredient, "id">;
+export type IngredientWithAmountCreate = Omit<IngredientWithAmount, "id">;
+
+export type RecipeCreate = Omit<Recipe, "id" | "ingredients" | "tags"> & {
+  tags: string[];
+  ingredients: IngredientWithAmountCreate[];
+};
 
 export const RECIPE_DATA: Recipe[] = [
   {
@@ -30,6 +43,7 @@ export const RECIPE_DATA: Recipe[] = [
     name: "Spaghetti Carbonara",
     cuisine: "Italian",
     mealType: "Dinner",
+    servings: 4,
     tags: [
       { id: "1", name: "Pasta" },
       { id: "2", name: "Comfort Food" },
@@ -46,6 +60,7 @@ export const RECIPE_DATA: Recipe[] = [
     name: "Chicken Tikka Masala",
     cuisine: "Indian",
     mealType: "Dinner",
+    servings: 3,
     tags: [
       { id: "3", name: "Spicy" },
       { id: "4", name: "Curry" },
@@ -62,6 +77,7 @@ export const RECIPE_DATA: Recipe[] = [
     name: "Vegetable Pad Thai",
     cuisine: "Thai",
     mealType: "Lunch",
+    servings: 2,
     tags: [
       { id: "5", name: "Vegetarian" },
       { id: "6", name: "Noodles" },
@@ -78,6 +94,7 @@ export const RECIPE_DATA: Recipe[] = [
     name: "Beef Tacos",
     cuisine: "Mexican",
     mealType: "Dinner",
+    servings: 2,
     tags: [
       { id: "7", name: "Tacos" },
       { id: "8", name: "Quick Meal" },
@@ -94,6 +111,7 @@ export const RECIPE_DATA: Recipe[] = [
     name: "Greek Salad",
     cuisine: "Greek",
     mealType: "Lunch",
+    servings: 4,
     tags: [
       { id: "9", name: "Healthy" },
       { id: "10", name: "Salad" },
@@ -110,6 +128,7 @@ export const RECIPE_DATA: Recipe[] = [
     name: "Blueberry Pancakes",
     cuisine: "American",
     mealType: "Breakfast",
+    servings: 4,
     tags: [
       { id: "11", name: "Sweet" },
       { id: "12", name: "Breakfast" },
@@ -138,26 +157,69 @@ export const BASE_RECIPE_DATA: BaseRecipe[] = [
   { id: "10", name: "Chocolate Brownies" },
 ];
 
-export type IngredientCreate = Omit<Ingredient, "id">;
-export type RecipeIngredientCreate = Omit<RecipeIngredient, "id">;
-export type RecipeCreate = Omit<Recipe, "id" | "ingredients"> & {
-  ingredients: RecipeIngredientCreate[];
+export const fetchIngredientById = async (id: string): Promise<Ingredient> => {
+  const response = await fetch(`${BASE_URL}/ingredients/${id}`);
+
+  return await response.json();
+};
+
+export const fetchAllIngredients = async (): Promise<Ingredient[]> => {
+  const response = await fetch(`${BASE_URL}/ingredients`);
+
+  return await response.json();
+};
+
+export const addIngredient = async (
+  ingredient: IngredientCreate
+): Promise<Ingredient> => {
+  const response = await fetch(`{BASE_URL}/ingredients`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(ingredient),
+  });
+
+  return await response.json();
+};
+
+export const updateIngredientsById = async (
+  id: string,
+  ingredient: IngredientCreate
+): Promise<Ingredient> => {
+  const response = await fetch(`{BASE_URL}/ingredients/${id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(ingredient),
+  });
+
+  return await response.json();
+};
+
+export const deleteIngredientById = async (id: string): Promise<void> => {
+  await fetch(`${BASE_URL}/ingredients/${id}`, {
+    method: "DELETE",
+  });
+
+  return;
 };
 
 export const fetchRecipeById = async (id: string): Promise<Recipe> => {
-  const response = await fetch(`${BASE_URL}/recipe/${id}`);
+  const response = await fetch(`${BASE_URL}/recipes/${id}`);
 
   return await response.json();
 };
 
 export const fetchAllRecipes = async (): Promise<Recipe[]> => {
-  const response = await fetch(`${BASE_URL}/recipe`);
+  const response = await fetch(`${BASE_URL}/recipes`);
 
   return await response.json();
 };
 
 export const addRecipe = async (recipe: RecipeCreate): Promise<Recipe> => {
-  const response = await fetch(`{BASE_URL}/recipe`, {
+  const response = await fetch(`{BASE_URL}/recipes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -172,7 +234,7 @@ export const updateRecipeById = async (
   id: string,
   recipe: RecipeCreate
 ): Promise<Recipe> => {
-  const response = await fetch(`{BASE_URL}/recipe/${id}`, {
+  const response = await fetch(`{BASE_URL}/recipes/${id}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -184,7 +246,7 @@ export const updateRecipeById = async (
 };
 
 export const deleteRecipeById = async (id: string): Promise<void> => {
-  await fetch(`${BASE_URL}/recipe/${id}`, {
+  await fetch(`${BASE_URL}/recipes/${id}`, {
     method: "DELETE",
   });
 

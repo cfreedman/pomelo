@@ -9,6 +9,11 @@ from app.schema.ingredients import (
 from app.schema.tags import Tag
 
 
+class BaseRecipe(BaseModel):
+    id: int
+    name: str
+
+
 class Recipe(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
