@@ -1,8 +1,9 @@
-import { JSX, useRef, createContext, RefObject } from "react";
+import { JSX, useRef, createContext, RefObject, useState } from "react";
 
 import TwoColumn from "@/components/layout/TwoColumn";
 import { MapRef } from "react-map-gl/mapbox";
 import StoresMap from "@/components/StoresMap";
+import Marker from "@/components/Marker";
 
 interface Store {
   name: string;
@@ -38,11 +39,19 @@ export const MapContext = createContext<RefObject<MapRef | null>>({
 
 export default function StoresPage(): JSX.Element {
   const mapRef = useRef<MapRef>(null);
+  const [isMapReady, setMapReady] = useState(false);
+  const [activeStoreAddress, setActiveStoreAddress] = useState<string | null>(
+    null
+  );
 
   const handleStoreClick = (latitude: number, longitude: number) => {
     mapRef.current?.flyTo({
       center: [longitude, latitude],
     });
+  };
+
+  const handleMarkerClick = (address: string) => {
+    setActiveStoreAddress(address);
   };
 
   return (
@@ -67,7 +76,24 @@ export default function StoresPage(): JSX.Element {
             </ul>
           </>
         }
-        right={<StoresMap />}
+        right={
+          <>
+            <StoresMap handleLoaded={() => setMapReady(true)} />
+            {isMapReady &&
+              storeList.map(({ address, latitude, longitude }) => {
+                return (
+                  <Marker
+                    key={address}
+                    map={mapRef.current?.getMap()}
+                    latitude={latitude}
+                    longitude={longitude}
+                    isActive={activeStoreAddress === address}
+                    handleClick={() => handleMarkerClick(address)}
+                  />
+                );
+              })}
+          </>
+        }
       />
     </MapContext.Provider>
   );

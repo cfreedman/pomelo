@@ -6,9 +6,14 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapContext } from "@/pages/StoresPage";
 
-export default function StoresMap(): JSX.Element {
+interface StoresMapProps {
+  handleLoaded: () => void;
+}
+
+export default function StoresMap({
+  handleLoaded,
+}: StoresMapProps): JSX.Element {
   const [searchValue, setSearchValue] = useState("");
-  const [mapLoaded, setMapLoaded] = useState(false);
   const mapRef = useContext(MapContext);
 
   const philadelphiaView = {
@@ -34,6 +39,7 @@ export default function StoresMap(): JSX.Element {
       />
       <Map
         ref={mapRef}
+        onLoad={handleLoaded}
         mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
         initialViewState={philadelphiaView}
         mapStyle=""
