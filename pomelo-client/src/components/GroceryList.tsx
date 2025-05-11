@@ -1,4 +1,4 @@
-import { JSX, useState } from "react";
+import { JSX } from "react";
 
 import { GroceryListIngredient } from "@/lib/shopping_list";
 

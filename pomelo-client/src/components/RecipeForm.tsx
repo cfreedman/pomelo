@@ -1,14 +1,28 @@
 import { JSX, useState } from "react";
 
-import { RecipeCreate, RecipeIngredientCreate } from "@/lib/recipes";
+import { RecipeCreate, IngredientWithAmountCreate } from "@/lib/recipes";
 import RemoveIcon from "@/assets/remove.png";
 
 const IngredientInput: React.FC<{
-  ingredient: RecipeIngredientCreate;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  ingredient: IngredientWithAmountCreate;
+  handleChange: (
+    value: string,
+    field: keyof IngredientWithAmountCreate
+  ) => void;
   deleteIngredient: () => void;
-}> = ({ ingredient, onChange, deleteIngredient }) => {
+}> = ({ ingredient, handleChange, deleteIngredient }) => {
   const { name, units, quantity } = ingredient;
+
+  const [quantityInput, setQuantityInput] = useState(quantity.toString());
+
+  const handleQuantityBlur = () => {
+    const parsedQuantity = parseFloat(quantityInput);
+
+    if (!isNaN(parsedQuantity)) {
+      handleChange(quantityInput, "quantity");
+    }
+  };
+
   return (
     <div className="flex flex-row gap-1">
       <input
@@ -17,15 +31,16 @@ const IngredientInput: React.FC<{
         name="name"
         placeholder="Ingredient"
         value={name}
-        onChange={(event) => onChange(event)}
+        onChange={(event) => handleChange(event.target.value, "name")}
       />
       <input
         className="recipeInput"
         type="text"
         name="quantity"
         placeholder="Quantity"
-        value={quantity}
-        onChange={(event) => onChange(event)}
+        value={quantityInput}
+        onChange={(event) => setQuantityInput(event.target.value)}
+        onBlur={() => handleQuantityBlur()}
       />
       <input
         className="recipeInput"
@@ -33,7 +48,7 @@ const IngredientInput: React.FC<{
         name="units"
         placeholder="Units"
         value={units}
-        onChange={(event) => onChange(event)}
+        onChange={(event) => handleChange(event.target.value, "units")}
       />
       <button onClick={() => deleteIngredient()}>
         <img className="w-4 h-4" src={RemoveIcon} alt="Remove" />
@@ -56,19 +71,18 @@ export default function RecipeForm(): JSX.Element {
   } as RecipeCreate);
 
   const handleIngredientChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    value: string,
+    field: keyof IngredientWithAmountCreate,
     index: number
   ) => {
-    const updatedIngredients: RecipeIngredientCreate[] = [
+    const updatedIngredients: IngredientWithAmountCreate[] = [
       ...recipe.ingredients,
     ];
 
-    const fieldName = event.target.name as keyof RecipeIngredientCreate;
-
-    if (fieldName === "quantity") {
-      updatedIngredients[index][fieldName] = Number(event.target.value);
+    if (field === "quantity") {
+      updatedIngredients[index][field] = Number(value);
     } else {
-      updatedIngredients[index][fieldName] = event.target.value;
+      updatedIngredients[index][field] = value;
     }
 
     setRecipe({
@@ -130,7 +144,9 @@ export default function RecipeForm(): JSX.Element {
         <IngredientInput
           key={index} // Add a unique key for each ingredient
           ingredient={ingredient}
-          onChange={(event) => handleIngredientChange(event, index)}
+          handleChange={(value, field) =>
+            handleIngredientChange(value, field, index)
+          }
           deleteIngredient={() => deleteIngredient(index)}
         />
       ))}
