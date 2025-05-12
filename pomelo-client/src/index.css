@@ -75,6 +75,56 @@
   --sidebar-ring: oklch(0.439 0 0);
 }
 
+@theme {
+  --color-breaker-bay-50: #f2fbfa;
+  --color-breaker-bay-100: #d4f3ef;
+  --color-breaker-bay-200: #a9e6e1;
+  --color-breaker-bay-300: #77d1cd;
+  --color-breaker-bay-400: #4ab7b5;
+  --color-breaker-bay-500: #309898;
+  --color-breaker-bay-600: #257a7c;
+  --color-breaker-bay-700: #216264;
+  --color-breaker-bay-800: #1f4e50;
+  --color-breaker-bay-900: #1d4344;
+  --color-breaker-bay-950: #0c2427;
+
+  --color-orange-peel-50: #fffcea;
+  --color-orange-peel-100: #fff4c5;
+  --color-orange-peel-200: #ffe885;
+  --color-orange-peel-300: #ffd646;
+  --color-orange-peel-400: #ffc21b;
+  --color-orange-peel-500: #ff9f00;
+  --color-orange-peel-600: #e27700;
+  --color-orange-peel-700: #bb5102;
+  --color-orange-peel-800: #983e08;
+  --color-orange-peel-900: #7c330b;
+  --color-orange-peel-950: #481900;
+
+  --color-orange-50: #fff5ed;
+  --color-orange-100: #feead6;
+  --color-orange-200: #fcd0ac;
+  --color-orange-300: #faaf77;
+  --color-orange-400: #f78240;
+  --color-orange-500: #f4631e;
+  --color-orange-600: #e54811;
+  --color-orange-700: #be3410;
+  --color-orange-800: #972b15;
+  --color-orange-900: #7a2514;
+  --color-orange-950: #421008;
+
+  --color-thunderbird-50: #fff0f0;
+  --color-thunderbird-100: #ffdede;
+  --color-thunderbird-200: #ffc2c2;
+  --color-thunderbird-300: #ff9898;
+  --color-thunderbird-400: #ff5c5c;
+  --color-thunderbird-500: #ff2a2a;
+  --color-thunderbird-600: #f80a0a;
+  --color-thunderbird-700: #cb0404;
+  --color-thunderbird-800: #ac0808;
+  --color-thunderbird-900: #8e0e0e;
+  --color-thunderbird-950: #4e0101;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

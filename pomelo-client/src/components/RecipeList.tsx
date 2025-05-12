@@ -12,12 +12,16 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "./ui/table";
+import TagIcon from "./TagIcon";
 import { Recipe, fetchAllRecipes } from "@/lib/recipes";
+import { DUMMY_RECIPES } from "@/dummy/recipes";
 
 export default function RecipeList(): JSX.Element {
   const { data: recipes, isLoading } = useQuery<Recipe[]>({
     queryFn: fetchAllRecipes,
     queryKey: ["allRecipes"],
+    placeholderData: DUMMY_RECIPES,
+    initialData: DUMMY_RECIPES,
   });
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -40,7 +44,7 @@ export default function RecipeList(): JSX.Element {
   );
 
   return (
-    <div className="flex flex-col grow bg-red-50 px-[30px] py-[50px]">
+    <div className="flex flex-col grow px-[30px] py-[50px]">
       <h1>Recipes</h1>
       <Button className="w-[80px] " onClick={() => setFilterOpen(!filterOpen)}>
         Filters
@@ -77,24 +81,43 @@ export default function RecipeList(): JSX.Element {
           </Select>
         </div>
       )}
-      <Table className="my-2">
+      <Table className="my-2 px-3">
         <TableHeader>
-          <TableRow>
-            <TableCell className="text-left">Title</TableCell>
-            <TableCell className="text-left">Tags</TableCell>
-            <TableCell className="text-left">Dish Type</TableCell>
-            <TableCell className="text-right">Cuisine</TableCell>
+          <TableRow className="hover:bg-white">
+            <TableCell className="text-left font-bold text-xl text-breaker-bay-600">
+              Title
+            </TableCell>
+            <TableCell className="text-left font-bold text-xl text-breaker-bay-600">
+              Tags
+            </TableCell>
+            <TableCell className="text-left font-bold text-xl text-breaker-bay-600">
+              Dish Type
+            </TableCell>
+            <TableCell className="text-right font-bold text-xl text-breaker-bay-600">
+              Cuisine
+            </TableCell>
           </TableRow>
         </TableHeader>
         <TableBody>
           {recipes?.map((recipe) => (
-            <TableRow key={recipe.name}>
-              <TableCell className="text-left">{recipe.name}</TableCell>
-              <TableCell className="text-left">
-                {recipe.tags.map(({ name }) => name).join(", ")}
+            <TableRow
+              key={recipe.name}
+              className="hover:bg-breaker-bay-200 even:bg-breaker-bay-100 border-none"
+            >
+              <TableCell className="text-left text-lg py-5">
+                {recipe.name}
               </TableCell>
-              <TableCell className="text-left">{recipe.mealType}</TableCell>
-              <TableCell className="text-right">{recipe.cuisine}</TableCell>
+              <TableCell className="text-left text-lg py-5 flex gap-1">
+                {recipe.tags.map(({ name }) => (
+                  <TagIcon key={name} name={name} width={20} height={20} />
+                ))}
+              </TableCell>
+              <TableCell className="text-left text-lg py-5">
+                {recipe.mealType}
+              </TableCell>
+              <TableCell className="text-right text-lg py-5">
+                {recipe.cuisine}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
