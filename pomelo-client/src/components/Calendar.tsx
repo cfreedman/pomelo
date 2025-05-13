@@ -8,6 +8,7 @@ import {
   Weekday,
   WEEKDAYS,
 } from "@/lib/meal_plan";
+import { useQuery } from "@tanstack/react-query";
 
 interface RecipeItemProps {
   name: string;
@@ -86,6 +87,10 @@ const CalendarDay = ({
 };
 
 export default function Calendar(): JSX.Element {
+  // const { data: mealPlan, isLoading } = useQuery<FoodCalendar>({
+  //   queryFn: ,
+  //   queryKey: ["mealPlan"]
+  // })
   const [foodCalendar, setFoodCalendar] =
     useState<FoodCalendar>(BLANK_CALENDAR);
 

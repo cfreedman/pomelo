@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app import db
 from app.schema.ingredients import Ingredient as IngredientSchema, IngredientWithAmount
 from app.schema.tags import Tag as TagSchema
-from app.schema.recipes import Recipe as RecipeSchema
+from app.schema.recipes import BaseRecipe, Recipe as RecipeSchema
 from app.schema.stores import Store as StoreSchema
 from app.schema.meal_plan import MealPlan as MealPlanSchema
 from app.schema.shopping_list import ShoppingList as ShoppingListSchema
@@ -169,8 +169,8 @@ class MealPlan(db.Model):
     def to_meal_plan_schema(self):
         items = []
         for link in self.recipe_links:
-            recipe = link.recipe.to_recipe_schema()
-            items.append(recipe)
+            base_recipe = BaseRecipe(id=link.recipe.id, name=link.recipe.name)
+            items.append(base_recipe)
 
         return MealPlanSchema(week_start=self.week_start, items=items)
 
