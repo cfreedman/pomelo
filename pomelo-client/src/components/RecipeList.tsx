@@ -109,7 +109,12 @@ export default function RecipeList(): JSX.Element {
               </TableCell>
               <TableCell className="text-left text-lg py-5 flex gap-1">
                 {recipe.tags.map(({ name }) => (
-                  <TagIcon key={name} name={name} width={20} height={20} />
+                  <TagIcon
+                    key={name}
+                    name={name.toLowerCase()}
+                    width={30}
+                    height={30}
+                  />
                 ))}
               </TableCell>
               <TableCell className="text-left text-lg py-5">
