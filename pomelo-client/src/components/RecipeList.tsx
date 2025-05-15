@@ -1,30 +1,20 @@
 import { JSX, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronRight, ChevronLeft } from "lucide-react";
 
-import { Button } from "./ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "./ui/table";
 import TagIcon from "./TagIcon";
-import { Recipe, fetchAllRecipes } from "@/lib/recipes";
-import { DUMMY_RECIPES } from "@/dummy/recipes";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "./ui/pagination";
+  Recipe,
+  fetchAllRecipes,
+  hasCuisine,
+  hasMealType,
+} from "@/lib/recipes";
+import { DUMMY_RECIPES } from "@/dummy/recipes";
+import ListFilteringControls, {
+  FilterField,
+  FilterSelection,
+} from "./ListFilteringControls";
+import PaginationControls from "./PaginationControls";
 
 export default function RecipeList(): JSX.Element {
   const { data: recipes, isLoading } = useQuery<Recipe[]>({
@@ -33,71 +23,86 @@ export default function RecipeList(): JSX.Element {
     placeholderData: DUMMY_RECIPES,
     initialData: DUMMY_RECIPES,
   });
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [itemsPerPage, setItemsPerPage] = useState(15);
+  const [searchInput, setSearchInput] = useState("");
+  const [filterSelection, setFilterSelection] = useState<FilterSelection>({
+    cuisine: [],
+    mealType: [],
+    tag: [],
+  });
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handleFilterChange = (value: string, field: FilterField) => {
+    const updatedFilterSelection = {
+      ...filterSelection,
+      [field]: [],
+    };
+
+    if (filterSelection[field].includes(value)) {
+      const updatedField = filterSelection[field].filter(
+        (item) => item !== value
+      );
+      updatedFilterSelection[field] = updatedField;
+    } else {
+      const updatedField = [...filterSelection[field]];
+      updatedField.push(value);
+      updatedFilterSelection[field] = updatedField;
+    }
+
+    setFilterSelection(updatedFilterSelection);
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  const cuisines = Array.from(
-    new Set(recipes?.map((recipe) => recipe.cuisine))
+  const allCuisines = Array.from(
+    new Set(recipes?.filter(hasCuisine).map((recipe) => recipe.cuisine))
   );
-  const mealTypes = Array.from(
+  const allMealTypes = Array.from(
+    new Set(recipes?.filter(hasMealType).map((recipe) => recipe.mealType))
+  );
+  const allTags = Array.from(
     new Set(
       recipes?.reduce((filtered: string[], recipe: Recipe) => {
-        if (recipe.mealType) {
-          filtered.push(recipe.mealType);
+        if (recipe.tags.length === 0) {
+          return filtered;
         }
-        return filtered;
+        const updated = filtered.concat(recipe.tags.map((tag) => tag.name));
+
+        return updated;
       }, [])
     )
   );
 
-  const pages = Math.round(recipes.length / itemsPerPage);
+  console.log("tags");
+  console.log(allTags);
+
+  const allFilters = {
+    cuisine: allCuisines,
+    mealType: allMealTypes,
+    tag: allTags,
+  };
+
+  const pageRecipes = recipes.slice(
+    (currentPage - 1) * itemsPerPage,
+    Math.min(currentPage * itemsPerPage, recipes.length)
+  );
+
+  const totalPages = Math.round(recipes.length / itemsPerPage);
 
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-col grow px-[30px] py-[50px]">
         <h1>Recipes</h1>
-        <Button
-          className="w-[80px] "
-          onClick={() => setFilterOpen(!filterOpen)}
-        >
-          Filters
-        </Button>
-        {filterOpen && (
-          <div className="flex my-2 p-2 bg-gray-100 rounded-sm">
-            <div className="flex flex-row flex-wrap mx-2">
-              {cuisines.map((cuisine) => (
-                <Button className="mx-1" key={cuisine}>
-                  {cuisine}
-                </Button>
-              ))}
-            </div>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Group by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Cuisine</SelectLabel>
-                  {cuisines.map((cuisine) => (
-                    <SelectItem key={cuisine} value="cuisine">
-                      {cuisine}
-                    </SelectItem>
-                  ))}
-                  <SelectLabel>Meal Type</SelectLabel>
-                  {mealTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+        <ListFilteringControls
+          searchInput={searchInput}
+          handleSearchChange={setSearchInput}
+          filterSelection={filterSelection}
+          handleFilterChange={handleFilterChange}
+          groupBySelection={null}
+          allFilters={allFilters}
+        />
         <Table className="my-2 px-3">
           <TableHeader>
             <TableRow className="hover:bg-white">
@@ -116,7 +121,7 @@ export default function RecipeList(): JSX.Element {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {recipes?.map((recipe) => (
+            {pageRecipes?.map((recipe) => (
               <TableRow
                 key={recipe.name}
                 className="hover:bg-breaker-bay-200 even:bg-breaker-bay-100 border-none"
@@ -144,33 +149,12 @@ export default function RecipeList(): JSX.Element {
             ))}
           </TableBody>
         </Table>
-      </div>
-      <div className="mt-4 flex w-full gap-4 items-center">
-        <select>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-          <option value={100}>100</option>
-        </select>
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious onClick={() => console.log("Poop")} />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink>1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink>2</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handlePageChange={setCurrentPage}
+          handleItemsPerPageChange={setItemsPerPage}
+        />
       </div>
     </div>
   );

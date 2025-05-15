@@ -27,6 +27,18 @@ export interface Recipe {
   ingredients: IngredientWithAmount[];
 }
 
+export function hasCuisine(
+  recipe: Recipe
+): recipe is Recipe & { cuisine: string } {
+  return typeof recipe.cuisine === "string";
+}
+
+export function hasMealType(
+  recipe: Recipe
+): recipe is Recipe & { mealType: string } {
+  return typeof recipe.mealType === "string";
+}
+
 // Data type to send to backend for creation or updating
 
 export type IngredientCreate = Omit<Ingredient, "id">;

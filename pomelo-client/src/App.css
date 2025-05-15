@@ -34,10 +34,6 @@
   color: #888;
 }
 
-li {
-  list-style: square;
-}
-
 .recipeInput {
   border-bottom: 2px solid blue;
   line-height: 1.5em;
