@@ -12,6 +12,14 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "./ui/sidebar";
+import {
+  CalendarDays,
+  CookingPot,
+  House,
+  ListCheck,
+  Settings,
+  ShoppingCart,
+} from "lucide-react";
 
 export default function AppSidebar(): JSX.Element {
   return (
@@ -23,24 +31,51 @@ export default function AppSidebar(): JSX.Element {
         <SidebarGroup>
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <Link to="/">Home</Link>
+            <SidebarMenu className="gap-2">
+              <SidebarMenuItem className="rounded-md text-white text-center bg-breaker-bay-500">
+                <Link className="flex items-center justify-center" to="/">
+                  <House />
+                  Home
+                </Link>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <Link to="/recipes">Recipes</Link>
+              <SidebarMenuItem className="rounded-md text-white text-center bg-amber-500">
+                <Link
+                  className="flex items-center justify-center"
+                  to="/recipes"
+                >
+                  <CookingPot />
+                  Recipes
+                </Link>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <Link to="/shopping-list">Shopping List</Link>
+              <SidebarMenuItem className="rounded-md text-white text-center bg-thunderbird-500">
+                <Link
+                  className="flex items-center justify-center"
+                  to="/shopping-list"
+                >
+                  <ListCheck />
+                  Shopping List
+                </Link>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <Link to="/stores">Grocery Stores</Link>
+              <SidebarMenuItem className="rounded-md text-white text-center bg-breaker-bay-500">
+                <Link className="flex items-center justify-center" to="/stores">
+                  <ShoppingCart />
+                  Grocery Stores
+                </Link>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <Link to="/calendar">Weekly Meals</Link>
+              <SidebarMenuItem className="rounded-md text-white text-center bg-amber-500">
+                <Link
+                  className="flex items-center justify-center"
+                  to="/calendar"
+                >
+                  <CalendarDays />
+                  Weekly Meals
+                </Link>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <Link to="/">Settings</Link>
+              <SidebarMenuItem className="rounded-md text-white text-center bg-thunderbird-500">
+                <Link className="flex items-center justify-center" to="/">
+                  <Settings />
+                  Settings
+                </Link>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
