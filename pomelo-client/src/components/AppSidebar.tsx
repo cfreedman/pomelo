@@ -31,7 +31,7 @@ export default function AppSidebar(): JSX.Element {
                 <Link to="/recipes">Recipes</Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Link to="/">Ingredients</Link>
+                <Link to="/shopping-list">Shopping List</Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <Link to="/stores">Grocery Stores</Link>
