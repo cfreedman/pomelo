@@ -20,12 +20,16 @@ import {
   Settings,
   ShoppingCart,
 } from "lucide-react";
+import PomeloIcon from "@/assets/icons/pomelo.png";
 
 export default function AppSidebar(): JSX.Element {
   return (
     <Sidebar>
       <SidebarHeader>
-        <h1>Hello</h1>
+        <div className="flex items-center">
+          <img src={PomeloIcon} alt="Pomelo" width={60} height={60} />
+          <h3>Pomelo</h3>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

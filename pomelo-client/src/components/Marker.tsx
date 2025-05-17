@@ -4,6 +4,8 @@ import { createPortal } from "react-dom";
 import mapboxgl, { Marker as MapMarker } from "mapbox-gl";
 import { MapInstance } from "react-map-gl/mapbox";
 
+import PomeloSticker from "@/assets/icons/pomelo-sticker.png";
+
 interface MapMarkerProps {
   map: MapInstance | undefined;
   latitude: number;
@@ -41,33 +43,14 @@ const Marker: React.FC<MapMarkerProps> = ({
   return (
     <>
       {createPortal(
-        <div
-          className={style}
-          style={{
-            display: "inline-block",
-
-            padding: "2px 10px",
-
-            borderRadius: "50px",
-
-            backgroundColor: isActive ? "#333" : "#fff",
-
-            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.5)",
-
-            fontFamily: "Arial, sans-serif",
-
-            fontSize: "14px",
-
-            fontWeight: "bold",
-
-            color: isActive ? "#fff" : "#333",
-
-            textAlign: "center",
-          }}
+        <button
+          className={`${
+            isActive ? "scale-150" : "scale-100"
+          } w-[50px] h-[50px] cursor-pointer`}
           onClick={() => handleClick()}
         >
-          {latitude}
-        </div>,
+          <img src={PomeloSticker} alt="Pomelo" className="w-full h-full" />
+        </button>,
         contentRef.current
       )}
     </>
