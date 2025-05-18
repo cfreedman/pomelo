@@ -5,13 +5,17 @@ import Map from "react-map-gl/mapbox";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapContext } from "@/pages/StoresPage";
+import { StoreCreate } from "@/lib/stores";
+import { SearchBoxRetrieveResponse } from "@mapbox/search-js-core";
 
 interface StoresMapProps {
   handleLoaded: () => void;
+  handleStoreSearch: (store: StoreCreate) => void;
 }
 
 export default function StoresMap({
   handleLoaded,
+  handleStoreSearch,
 }: StoresMapProps): JSX.Element {
   const [searchValue, setSearchValue] = useState("");
   const mapRef = useContext(MapContext);
@@ -20,6 +24,20 @@ export default function StoresMap({
     longitude: -75.16,
     latitude: 39.95,
     zoom: 14,
+  };
+
+  const handleSearchRetrieval = (res: SearchBoxRetrieveResponse) => {
+    const topResult = res.features[0];
+
+    const { full_address, coordinates, name } = topResult.properties;
+    const searchedStore: StoreCreate = {
+      name,
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+      address: full_address,
+    };
+
+    handleStoreSearch(searchedStore);
   };
 
   return (
@@ -35,7 +53,7 @@ export default function StoresMap({
         mapboxgl={mapboxgl}
         value={searchValue}
         onChange={(e) => setSearchValue(e)}
-        marker={true}
+        onRetrieve={handleSearchRetrieval}
       />
       <Map
         ref={mapRef}

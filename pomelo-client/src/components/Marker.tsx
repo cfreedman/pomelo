@@ -38,8 +38,6 @@ const Marker: React.FC<MapMarkerProps> = ({
     };
   }, [map, latitude, longitude]);
 
-  const style = isActive ? "bg-red" : "bg-blue";
-
   return (
     <>
       {createPortal(

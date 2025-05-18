@@ -2,18 +2,18 @@ import { JSX, useEffect, useRef } from "react";
 
 import { MapInstance } from "react-map-gl/mapbox";
 
-import { Store } from "@/lib/stores";
+import { Store, StoreCreate } from "@/lib/stores";
 import mapboxgl from "mapbox-gl";
 import { createPortal } from "react-dom";
 
 interface MapPopupProps {
   map: MapInstance | undefined;
-  activeStore: Store;
+  currentStore: Store | StoreCreate;
 }
 
 export default function MapPopup({
   map,
-  activeStore,
+  currentStore,
 }: MapPopupProps): JSX.Element {
   const popupRef = useRef<mapboxgl.Popup | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -39,15 +39,15 @@ export default function MapPopup({
     if (!map || !popupRef.current || !contentRef.current) return;
 
     popupRef.current
-      .setLngLat([activeStore.longitude, activeStore.latitude])
+      .setLngLat([currentStore.longitude, currentStore.latitude])
       .setDOMContent(contentRef.current)
       .addTo(map);
-  }, [activeStore, map]);
+  }, [currentStore, map]);
 
   return createPortal(
     <div className="bg-white text-black p-3">
-      <h3>{activeStore.name}</h3>
-      <p>{activeStore.address}</p>
+      <h3>{currentStore.name}</h3>
+      <p>{currentStore.address}</p>
     </div>,
     contentRef.current
   );

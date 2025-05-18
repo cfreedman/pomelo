@@ -5,7 +5,7 @@ import { MapRef } from "react-map-gl/mapbox";
 import StoresMap from "@/components/StoresMap";
 import Marker from "@/components/Marker";
 import MapPopup from "@/components/MapPopup";
-import { Store } from "@/lib/stores";
+import { Store, StoreCreate } from "@/lib/stores";
 import { dummyStores } from "@/dummy/stores";
 
 export const MapContext = createContext<RefObject<MapRef | null>>({
@@ -16,6 +16,7 @@ export default function StoresPage(): JSX.Element {
   const mapRef = useRef<MapRef>(null);
   const [isMapReady, setMapReady] = useState(false);
   const [activeStore, setActiveStore] = useState<Store | null>(null);
+  const [searchStore, setSearchStore] = useState<StoreCreate | null>(null);
 
   const handleStoreClick = (latitude: number, longitude: number) => {
     mapRef.current?.flyTo({
@@ -25,6 +26,12 @@ export default function StoresPage(): JSX.Element {
 
   const handleMarkerClick = (store: Store) => {
     setActiveStore(store);
+  };
+
+  const handleStoreSearch = (store: StoreCreate) => {
+    console.log(store);
+    setActiveStore(null);
+    setSearchStore(store);
   };
 
   return (
@@ -51,7 +58,10 @@ export default function StoresPage(): JSX.Element {
         }
         right={
           <>
-            <StoresMap handleLoaded={() => setMapReady(true)} />
+            <StoresMap
+              handleLoaded={() => setMapReady(true)}
+              handleStoreSearch={handleStoreSearch}
+            />
             {isMapReady &&
               dummyStores.map((store: Store) => {
                 return (
@@ -65,10 +75,24 @@ export default function StoresPage(): JSX.Element {
                   />
                 );
               })}
-            {isMapReady && activeStore && (
+            {searchStore && (
+              <Marker
+                key={searchStore.address}
+                map={mapRef.current?.getMap()}
+                latitude={searchStore.latitude}
+                longitude={searchStore.longitude}
+                isActive={false}
+                handleClick={() => {
+                  console.log("blah");
+                }}
+              />
+            )}
+            {isMapReady && (activeStore || searchStore) && (
               <MapPopup
                 map={mapRef.current?.getMap()}
-                activeStore={activeStore}
+                currentStore={
+                  (activeStore ?? searchStore) as Store | StoreCreate
+                }
               />
             )}
           </>
