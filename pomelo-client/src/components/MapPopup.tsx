@@ -2,9 +2,10 @@ import { JSX, useEffect, useRef } from "react";
 
 import { MapInstance } from "react-map-gl/mapbox";
 
-import { Store, StoreCreate } from "@/lib/stores";
+import { addStore, Store, StoreCreate } from "@/lib/stores";
 import mapboxgl from "mapbox-gl";
 import { createPortal } from "react-dom";
+import { useMutation } from "@tanstack/react-query";
 
 interface MapPopupProps {
   map: MapInstance | undefined;
@@ -17,6 +18,9 @@ export default function MapPopup({
 }: MapPopupProps): JSX.Element {
   const popupRef = useRef<mapboxgl.Popup | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
+  const mutation = useMutation({
+    mutationFn: () => addStore(currentStore),
+  });
 
   if (!contentRef.current) {
     contentRef.current = document.createElement("div");
@@ -48,6 +52,7 @@ export default function MapPopup({
     <div className="bg-white text-black p-3">
       <h3>{currentStore.name}</h3>
       <p>{currentStore.address}</p>
+      <button onClick={() => mutation.mutate()}>Save Store</button>
     </div>,
     contentRef.current
   );
