@@ -140,9 +140,9 @@ class Store(db.Model):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
-    address: Mapped[str] = mapped_column(String(75))
-    latitude: Mapped[float] = mapped_column(Float)
-    longitude: Mapped[float] = mapped_column(Float)
+    address: Mapped[str] = mapped_column(String(75), nullable=False)
+    latitude: Mapped[float] = mapped_column(Float, nullable=False)
+    longitude: Mapped[float] = mapped_column(Float, nullable=False)
 
     ingredients: Mapped[List[Ingredient]] = relationship(
         "Ingredient", back_populates="store"
