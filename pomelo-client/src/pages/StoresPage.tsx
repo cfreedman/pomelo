@@ -6,7 +6,7 @@ import StoresMap from "@/components/StoresMap";
 import Marker from "@/components/Marker";
 import MapPopup from "@/components/MapPopup";
 import { Store, StoreCreate } from "@/lib/stores";
-import { dummyStores } from "@/dummy/stores";
+import { useStores } from "@/hooks/useStores";
 
 export const MapContext = createContext<RefObject<MapRef | null>>({
   current: null,
@@ -17,6 +17,8 @@ export default function StoresPage(): JSX.Element {
   const [isMapReady, setMapReady] = useState(false);
   const [activeStore, setActiveStore] = useState<Store | null>(null);
   const [searchStore, setSearchStore] = useState<StoreCreate | null>(null);
+
+  const { stores } = useStores();
 
   const handleStoreClick = (latitude: number, longitude: number) => {
     mapRef.current?.flyTo({
@@ -41,7 +43,7 @@ export default function StoresPage(): JSX.Element {
           <>
             <h1>Favorite Stores</h1>
             <ul>
-              {dummyStores.map(({ name, address, latitude, longitude }) => (
+              {stores.map(({ name, address, latitude, longitude }) => (
                 <li key={name}>
                   <label>
                     <h3>{name}</h3>
@@ -63,7 +65,7 @@ export default function StoresPage(): JSX.Element {
               handleStoreSearch={handleStoreSearch}
             />
             {isMapReady &&
-              dummyStores.map((store: Store) => {
+              stores.map((store: Store) => {
                 return (
                   <Marker
                     key={store.address}
