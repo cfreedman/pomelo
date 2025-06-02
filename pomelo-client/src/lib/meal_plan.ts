@@ -58,31 +58,28 @@ export const fetchAllMealPlans = async (): Promise<MealPlan[]> => {
   return await response.json();
 };
 
-export const addMealPlan = async (
-  calendar: FoodCalendar
-): Promise<MealPlan> => {
+export const addMealPlan = async (mealPlan: MealPlan): Promise<MealPlan> => {
   const response = await fetch(`${BASE_URL}/meal-plans`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(calendar),
+    body: JSON.stringify(mealPlan),
   });
 
   return await response.json();
 };
 
 export const updateMealPlanById = async (
-  weekStart: Date,
-  calendar: FoodCalendar
+  mealPlan: MealPlan
 ): Promise<MealPlan> => {
-  const serializedDate = getDateString(weekStart);
-  const response = await fetch(`${BASE_URL}/MealPlans/${serializedDate}`, {
-    method: "POST",
+  const serializedDate = getDateString(mealPlan.weekStart);
+  const response = await fetch(`${BASE_URL}/meal-plans/${serializedDate}`, {
+    method: "PUT",
     headers: {
-      "Content-Type": "application.json",
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(calendar),
+    body: JSON.stringify(mealPlan.items),
   });
 
   return await response.json();
@@ -90,7 +87,7 @@ export const updateMealPlanById = async (
 
 export const deleteMealPlanById = async (weekStart: Date): Promise<void> => {
   const serializedDate = getDateString(weekStart);
-  await fetch(`${BASE_URL}/MealPlans/${serializedDate}`, {
+  await fetch(`${BASE_URL}/meal-plans/${serializedDate}`, {
     method: "DELETE",
   });
 

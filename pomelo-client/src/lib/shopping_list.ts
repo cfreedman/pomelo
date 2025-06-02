@@ -11,22 +11,24 @@ export interface ShoppingListCreate {
   items: IngredientWithAmountCreate[];
 }
 
-export const fetchRecipeById = async (id: string): Promise<ShoppingList> => {
+export const fetchShoppingListById = async (
+  id: string
+): Promise<ShoppingList> => {
   const response = await fetch(`${BASE_URL}/shopping-lists/${id}`);
 
   return await response.json();
 };
 
-export const fetchAllRecipes = async (): Promise<ShoppingList[]> => {
-  const response = await fetch(`${BASE_URL}/recipes`);
+export const fetchAllShoppingLists = async (): Promise<ShoppingList[]> => {
+  const response = await fetch(`${BASE_URL}/shopping-lists`);
 
   return await response.json();
 };
 
-export const addRecipe = async (
+export const addShoppingList = async (
   shoppingList: ShoppingListCreate
 ): Promise<ShoppingList> => {
-  const response = await fetch(`{BASE_URL}/recipes`, {
+  const response = await fetch(`{BASE_URL}/shopping-lists`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -37,7 +39,7 @@ export const addRecipe = async (
   return await response.json();
 };
 
-export const updateRecipeById = async (
+export const updateShoppingListById = async (
   id: string,
   shoppingList: ShoppingListCreate
 ): Promise<ShoppingList> => {
@@ -52,7 +54,7 @@ export const updateRecipeById = async (
   return await response.json();
 };
 
-export const deleteRecipeById = async (id: string): Promise<void> => {
+export const deleteShoppingListById = async (id: string): Promise<void> => {
   await fetch(`${BASE_URL}/shopping-lists/${id}`, {
     method: "DELETE",
   });

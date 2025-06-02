@@ -1,4 +1,11 @@
-import { JSX, useRef, createContext, RefObject, useState } from "react";
+import {
+  JSX,
+  useRef,
+  createContext,
+  RefObject,
+  useState,
+  useEffect,
+} from "react";
 
 import TwoColumn from "@/components/layout/TwoColumn";
 import { MapRef } from "react-map-gl/mapbox";
@@ -19,6 +26,12 @@ export default function StoresPage(): JSX.Element {
   const [searchStore, setSearchStore] = useState<StoreCreate | null>(null);
 
   const { stores } = useStores();
+
+  useEffect(() => {
+    if (activeStore !== searchStore) {
+      setSearchStore(null);
+    }
+  }, [activeStore]);
 
   const handleStoreClick = (latitude: number, longitude: number) => {
     mapRef.current?.flyTo({

@@ -37,6 +37,8 @@ export default function StoresMap({
       address: full_address,
     };
 
+    console.log(searchedStore);
+
     handleStoreSearch(searchedStore);
   };
 
