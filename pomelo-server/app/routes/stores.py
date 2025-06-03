@@ -10,14 +10,17 @@ stores_bp = Blueprint("stores", __name__)
 @stores_bp.get("/")
 def get_stores():
     stores = db.session.query(Store).all()
-    response = [schema.Store.model_validate(store).model_dump() for store in stores]
+    response = [
+        schema.Store.model_validate(store.to_store_schema()).model_dump()
+        for store in stores
+    ]
     return jsonify(response)
 
 
 @stores_bp.get("/<int:id>")
 def get_store_by_id(id: int):
     store = Store.query.get_or_404(id)
-    response = schema.Store.model_validate(store).model_dump()
+    response = schema.Store.model_validate(store.to_store_schema()).model_dump()
     return jsonify(response)
 
 
@@ -30,7 +33,9 @@ def create_store():
     db.session.commit()
     db.session.refresh(new_store)
 
-    return jsonify(schema.Store.model_validate(new_store).model_dump()), 201
+    return jsonify(
+        schema.Store.model_validate(new_store.to_store_schema()).model_dump()
+    ), 201
 
 
 @stores_bp.put("/<int:id>")
@@ -45,12 +50,14 @@ def update_store_by_id(id: int):
 
     store = Store.query.get_or_404(id)
 
-    return jsonify(schema.Store.model_validate(store).model_dump()), 200
+    return jsonify(
+        schema.Store.model_validate(store.to_store_schema()).model_dump()
+    ), 200
 
 
 @stores_bp.delete("/<int:id>")
 def delete_store_by_id(id: int):
-    store = Store.get_or_404(id)
+    store = Store.query.get_or_404(id)
     db.session.delete(store)
     db.session.commit()
 

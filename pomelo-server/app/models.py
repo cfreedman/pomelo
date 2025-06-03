@@ -151,7 +151,19 @@ class Store(db.Model):
     def __repr__(self) -> str:
         return f"Store {self.name} located at {self.address}"
 
-    # def to_store_schema(self) -> StoreSchema:
+    def to_store_schema(self) -> StoreSchema:
+        ingredients = [
+            ingredient.to_ingredient_schema() for ingredient in self.ingredients
+        ]
+
+        return StoreSchema(
+            id=self.id,
+            name=self.name,
+            address=self.address,
+            latitude=self.latitude,
+            longitude=self.longitude,
+            ingredients=ingredients,
+        )
 
 
 class MealPlan(db.Model):

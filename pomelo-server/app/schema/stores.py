@@ -1,4 +1,7 @@
+from typing import List
 from pydantic import BaseModel, ConfigDict
+
+from app.schema.ingredients import Ingredient
 
 
 class Store(BaseModel):
@@ -9,6 +12,8 @@ class Store(BaseModel):
     address: str
     latitude: float
     longitude: float
+
+    ingredients: List[Ingredient]
 
 
 class StoreCreate(BaseModel):
