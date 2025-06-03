@@ -1,4 +1,4 @@
-import { dummyStores } from "@/dummy/stores";
+// import { dummyStores } from "@/dummy/stores";
 import { addStore, fetchAllStores, Store, StoreCreate } from "../lib/stores";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -8,8 +8,6 @@ export const useStores = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["stores"],
     queryFn: fetchAllStores,
-    initialData: dummyStores,
-    placeholderData: dummyStores,
   });
 
   const addStoreMutation = useMutation({

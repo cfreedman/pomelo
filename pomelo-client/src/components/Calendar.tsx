@@ -1,6 +1,8 @@
 import React, { JSX } from "react";
 import { useState } from "react";
 
+import { useQuery } from "@tanstack/react-query";
+
 import { BaseRecipe, BASE_RECIPE_DATA } from "@/lib/recipes";
 import {
   BLANK_CALENDAR,
@@ -8,7 +10,6 @@ import {
   Weekday,
   WEEKDAYS,
 } from "@/lib/meal_plan";
-import { useQuery } from "@tanstack/react-query";
 
 interface RecipeItemProps {
   name: string;

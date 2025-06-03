@@ -1,4 +1,5 @@
 import { BASE_URL } from "@/config/constants";
+import { Ingredient } from "./recipes";
 
 export interface Store {
   id: number;
@@ -6,6 +7,8 @@ export interface Store {
   address: string;
   latitude: number;
   longitude: number;
+
+  ingredients?: Ingredient[];
 }
 
 export type StoreCreate = Omit<Store, "id">;
@@ -41,7 +44,7 @@ export const updateStoreById = async (
   const response = await fetch(`${BASE_URL}/stores/${id}`, {
     method: "POST",
     headers: {
-      "Content-Type": "application.json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(store),
   });
