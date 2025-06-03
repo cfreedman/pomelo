@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, request
+from sqlalchemy import select
 
 from app import db
-from app.models import Ingredient, IngredientRecipeBridge, Recipe, Tag
+from app.models import Recipe
 import app.schema.recipes as schema
 from app.services import create_new_recipe, update_existing_recipe
 
@@ -12,7 +13,7 @@ recipes_bp = Blueprint("recipes", __name__)
 @recipes_bp.get("/")
 def get_recipes():
     print("Fetching all recipes")
-    recipes = db.session.query(Recipe).all()
+    recipes = db.session.execute(select(Recipe)).scalars().all()
     result = [
         schema.Recipe.model_validate(recipe.to_recipe_schema()).model_dump()
         for recipe in recipes

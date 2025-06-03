@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, make_response, request
+from sqlalchemy import delete, select
 
 from app import db
 from app.models import Ingredient, IngredientShoppingListBridge, ShoppingList
@@ -29,9 +30,9 @@ def create_shopping_list():
     db.session.refresh(new_shopping_list)
 
     for item in shopping_list_data.items:
-        ingredient = Ingredient.query.filter_by(
-            name=item.name, units=item.units
-        ).first()
+        ingredient = db.session.execute(
+            select(Ingredient).filter_by(name=item.name, units=item.units)
+        ).scalar_one_or_none()
 
         if not ingredient:
             ingredient = Ingredient(name=item.name, units=item.units)
@@ -58,15 +59,17 @@ def update_shopping_list_by_id(id: int):
     shopping_list_data = schema.ShoppingListCreate.model_validate(**data)
     shopping_list = ShoppingList.query.get_or_404(id)
 
-    db.session.query(IngredientShoppingListBridge).filter_by(
-        shopping_list_id=id
-    ).delete()
+    db.session.execute(
+        delete(IngredientShoppingListBridge).where(
+            IngredientShoppingListBridge.shopping_list_id == id
+        )
+    )
     db.session.flush()
 
     for item in shopping_list_data.items:
-        ingredient = Ingredient.query.filter_by(
-            name=item.name, units=item.units
-        ).first()
+        ingredient = db.session.execute(
+            select(Ingredient).filter_by(name=item.name, units=item.units)
+        ).scalar_one_or_none()
 
         if not ingredient:
             ingredient = Ingredient(name=item.name, units=item.units)

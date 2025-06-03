@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from sqlalchemy import select
 
 from app import db
 from app.models import Store
@@ -9,7 +10,7 @@ stores_bp = Blueprint("stores", __name__)
 
 @stores_bp.get("/")
 def get_stores():
-    stores = db.session.query(Store).all()
+    stores = db.session.execute(select(Store)).scalars().all()
     response = [
         schema.Store.model_validate(store.to_store_schema()).model_dump()
         for store in stores
@@ -28,6 +29,13 @@ def get_store_by_id(id: int):
 def create_store():
     data = request.get_json()
     store_data = schema.StoreCreate.model_validate(data)
+
+    repeated_store = db.session.execute(
+        select(Store).filter_by(address=store_data.address)
+    ).scalar_one_or_none()
+    if repeated_store:
+        return jsonify({"message": "Store with this address already exists"}), 400
+
     new_store = Store(**store_data.model_dump())
     db.session.add(new_store)
     db.session.commit()

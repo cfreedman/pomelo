@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from sqlalchemy import select
 
 from app import db
 from app.models import Ingredient
@@ -9,7 +10,7 @@ ingredients_bp = Blueprint("ingredients", __name__)
 
 @ingredients_bp.get("/")
 def get_ingredients():
-    ingredients = db.session.query(Ingredient).all()
+    ingredients = db.session.execute(select(Ingredient)).scalars().all()
     result = [
         schema.Ingredient.model_validate(ingredient.to_ingredient_schema()).model_dump()
         for ingredient in ingredients
@@ -32,6 +33,15 @@ def get_ingredient_by_id(id: int):
 def create_ingredient():
     data = request.get_json()
     ingredient_data = schema.IngredientCreate.model_validate(data)
+
+    repeated_ingredient = db.session.execute(
+        select(Ingredient).filter_by(
+            name=ingredient_data.name, units=ingredient_data.units
+        )
+    ).scalar_one_or_none()
+
+    if repeated_ingredient:
+        return jsonify({"message": "Ingredient already exists"}), 400
 
     new_ingredient = Ingredient()
     new_ingredient.name = ingredient_data.name
