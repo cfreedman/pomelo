@@ -1,5 +1,11 @@
 // import { dummyStores } from "@/dummy/stores";
-import { addStore, fetchAllStores, Store, StoreCreate } from "../lib/stores";
+import {
+  addStore,
+  deleteStoreById,
+  fetchAllStores,
+  Store,
+  StoreCreate,
+} from "../lib/stores";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useStores = () => {
@@ -36,10 +42,18 @@ export const useStores = () => {
     },
   });
 
+  const deleteStoreMutation = useMutation({
+    mutationFn: deleteStoreById,
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["stores"] });
+    },
+  });
+
   return {
     stores: data || [],
     isLoading,
     addStore: addStoreMutation.mutate,
     isAdding: addStoreMutation.isPending,
+    deleteStore: deleteStoreMutation.mutate,
   };
 };
