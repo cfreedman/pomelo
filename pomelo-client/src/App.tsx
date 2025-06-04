@@ -19,7 +19,7 @@ function App() {
           <Route path="/" element={<SidebarWrapper />}>
             <Route path="recipes" element={<RecipesPage />} />
             <Route path="stores" element={<StoresPage />} />
-            <Route path="calendar" element={<CalendarPage />} />
+            <Route path="calendar/:weekStart?" element={<CalendarPage />} />
             <Route path="shopping-list" element={<ShoppingListPage />} />
             <Route path="test" element={<TestPage />} />
           </Route>

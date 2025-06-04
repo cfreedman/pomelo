@@ -1,4 +1,4 @@
-import React, { JSX } from "react";
+import React, { JSX, useEffect } from "react";
 import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
@@ -6,10 +6,19 @@ import { useQuery } from "@tanstack/react-query";
 import { BaseRecipe, BASE_RECIPE_DATA } from "@/lib/recipes";
 import {
   BLANK_CALENDAR,
+  fetchMealPlanById,
   FoodCalendar,
+  getDateString,
+  getNextSunday,
+  getPreviousSunday,
+  getWeekdays,
+  MealPlan,
+  parseDateString,
+  validDateString,
   Weekday,
   WEEKDAYS,
 } from "@/lib/meal_plan";
+import { useNavigate, useParams } from "react-router";
 
 interface RecipeItemProps {
   name: string;
@@ -88,24 +97,31 @@ const CalendarDay = ({
 };
 
 export default function Calendar(): JSX.Element {
-  // const { data: mealPlan, isLoading } = useQuery<FoodCalendar>({
-  //   queryFn: ,
-  //   queryKey: ["mealPlan"]
-  // })
+  const { weekStart } = useParams();
+  const currentDate =
+    weekStart && validDateString(weekStart)
+      ? parseDateString(weekStart)
+      : new Date();
+  const currentWeekdays = getWeekdays(currentDate);
+  const serializedCurrentSunday = getDateString(currentWeekdays["Sunday"]);
+
+  const previousSunday = getPreviousSunday(currentWeekdays["Sunday"]);
+  const nextSunday = getNextSunday(currentWeekdays["Sunday"]);
+
+  const navigate = useNavigate();
+  const { data: mealPlan, isLoading } = useQuery<MealPlan>({
+    queryFn: () => fetchMealPlanById(serializedCurrentSunday),
+    queryKey: ["mealPlan", serializedCurrentSunday],
+  });
+
   const [foodCalendar, setFoodCalendar] =
     useState<FoodCalendar>(BLANK_CALENDAR);
 
-  const currentDate = new Date();
-  const currentDay = currentDate.getDay();
-  const currentWeekSunday = new Date(currentDate);
-  currentWeekSunday.setDate(currentDate.getDate() - currentDay);
-
-  const currentWeekdays: Date[] = [];
-  for (let i = 0; i < 7; i++) {
-    const day = new Date(currentWeekSunday);
-    day.setDate(currentWeekSunday.getDate() + i);
-    currentWeekdays.push(day);
-  }
+  useEffect(() => {
+    if (mealPlan) {
+      setFoodCalendar(mealPlan.items);
+    }
+  }, [mealPlan]);
 
   const handleDragRecipeItem = (
     e: React.DragEvent,
@@ -171,17 +187,33 @@ export default function Calendar(): JSX.Element {
   return (
     <>
       <div className="flex w-[1800px] my-10">
-        {WEEKDAYS.map((day, index) => (
-          <CalendarDay
-            key={day}
-            weekday={day as Weekday}
-            date={currentWeekdays[index].getDate().toString()}
-            recipes={foodCalendar[day as Weekday]}
-            handleDrop={(e: React.DragEvent) => handleDrop(e, day as Weekday)}
-            handleDragOver={handleDragOver}
-            handleDragRecipeCard={handleDragRecipeCard}
-          />
-        ))}
+        <div className="flex">
+          <button
+            onClick={() => {
+              navigate(`/calendar/${getDateString(previousSunday)}`);
+            }}
+          >
+            Previous
+          </button>
+          {WEEKDAYS.map((day) => (
+            <CalendarDay
+              key={day}
+              weekday={day as Weekday}
+              date={currentWeekdays[day].getDate().toString()}
+              recipes={foodCalendar[day as Weekday]}
+              handleDrop={(e: React.DragEvent) => handleDrop(e, day as Weekday)}
+              handleDragOver={handleDragOver}
+              handleDragRecipeCard={handleDragRecipeCard}
+            />
+          ))}
+          <button
+            onClick={() => {
+              navigate(`/calendar/${getDateString(nextSunday)}`);
+            }}
+          >
+            Next
+          </button>
+        </div>
       </div>
       <ul>
         {BASE_RECIPE_DATA.map(({ id, name }) => (
