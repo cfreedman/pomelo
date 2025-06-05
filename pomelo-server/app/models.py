@@ -170,21 +170,19 @@ class MealPlan(db.Model):
     __tablename__ = "meal_plans"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    week_start: Mapped[datetime] = mapped_column(
-        Date
-    )  # Represents the Sunday of the week
+    date: Mapped[datetime] = mapped_column(Date)
 
     recipe_links: Mapped[List["RecipeMealPlanBridge"]] = relationship(
         "RecipeMealPlanBridge", back_populates="meal_plan", cascade="all, delete-orphan"
     )
 
-    def to_meal_plan_schema(self):
+    def get_recipes(self) -> List[BaseRecipe]:
         items = []
         for link in self.recipe_links:
             base_recipe = BaseRecipe(id=link.recipe.id, name=link.recipe.name)
             items.append(base_recipe)
 
-        return MealPlanSchema(week_start=self.week_start, items=items)
+        return items
 
 
 # Many to many for recipes appearing in weekly meal plans
@@ -207,7 +205,9 @@ class ShoppingList(db.Model):
     __tablename__ = "shopping_lists"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    week_start: Mapped[datetime] = mapped_column(Date)
+    week_start: Mapped[datetime] = mapped_column(
+        Date
+    )  # Represents the start of the week (Sunday)
 
     ingredient_links: Mapped[List["IngredientShoppingListBridge"]] = relationship(
         "IngredientShoppingListBridge",
@@ -230,7 +230,7 @@ class ShoppingList(db.Model):
         return ShoppingListSchema(week_start=self.week_start, items=items)
 
 
-# Many to many for ingredients appearing in weekly hsopping lists
+# Many to many for ingredients appearing in weekly shopping lists
 class IngredientShoppingListBridge(db.Model):
     __tablename__ = "ingredient_shopping_list_bridge"
 

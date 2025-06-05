@@ -14,6 +14,12 @@ class BaseRecipe(BaseModel):
     name: str
 
 
+class BaseRecipeWithAmount(BaseModel):
+    id: int
+    name: str
+    quantity: int
+
+
 class Recipe(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
