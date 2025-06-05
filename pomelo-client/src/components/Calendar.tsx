@@ -1,24 +1,23 @@
 import React, { JSX, useEffect } from "react";
 import { useState } from "react";
 
-import { useQuery } from "@tanstack/react-query";
-
 import { BaseRecipe, BASE_RECIPE_DATA } from "@/lib/recipes";
 import {
+  addRecipeToCalendar,
   BLANK_CALENDAR,
-  fetchMealPlanById,
   FoodCalendar,
   getDateString,
   getNextSunday,
   getPreviousSunday,
   getWeekdays,
-  MealPlan,
+  moveRecipeInCalendar,
   parseDateString,
   validDateString,
   Weekday,
   WEEKDAYS,
 } from "@/lib/meal_plan";
 import { useNavigate, useParams } from "react-router";
+import { useMealPlanById, useMealPlans } from "@/hooks/useMealPlans";
 
 interface RecipeItemProps {
   name: string;
@@ -103,16 +102,20 @@ export default function Calendar(): JSX.Element {
       ? parseDateString(weekStart)
       : new Date();
   const currentWeekdays = getWeekdays(currentDate);
+  const currentSunday = currentWeekdays["Sunday"];
   const serializedCurrentSunday = getDateString(currentWeekdays["Sunday"]);
 
   const previousSunday = getPreviousSunday(currentWeekdays["Sunday"]);
   const nextSunday = getNextSunday(currentWeekdays["Sunday"]);
 
   const navigate = useNavigate();
-  const { data: mealPlan, isLoading } = useQuery<MealPlan>({
-    queryFn: () => fetchMealPlanById(serializedCurrentSunday),
-    queryKey: ["mealPlan", serializedCurrentSunday],
-  });
+
+  if (weekStart !== serializedCurrentSunday) {
+    navigate(`/calendar/${serializedCurrentSunday}`);
+  }
+
+  const { mealPlan, isError, updateMealPlan } = useMealPlanById(currentSunday);
+  const { addMealPlan } = useMealPlans();
 
   const [foodCalendar, setFoodCalendar] =
     useState<FoodCalendar>(BLANK_CALENDAR);
@@ -149,14 +152,18 @@ export default function Calendar(): JSX.Element {
         name: name,
       };
 
-      setFoodCalendar((prevCalendar) => {
-        const updatedCalendar = { ...prevCalendar };
-        const otherRecipes = updatedCalendar[weekday].filter(
-          (recipe) => recipe.id !== id
-        );
-        updatedCalendar[weekday] = [...otherRecipes, recipe];
-        return updatedCalendar;
-      });
+      const updatedCalendar = addRecipeToCalendar(
+        foodCalendar,
+        weekday,
+        recipe
+      );
+
+      setFoodCalendar(updatedCalendar);
+      if (!isError) {
+        updateMealPlan(updatedCalendar);
+      } else {
+        addMealPlan({ weekStart: currentSunday, items: updatedCalendar });
+      }
     } else if (recipeData.split("-").length === 3) {
       const [id, name, day] = recipeData.split("-");
       const recipe: BaseRecipe = {
@@ -165,18 +172,15 @@ export default function Calendar(): JSX.Element {
       };
       const prevWeekday = day as Weekday;
 
-      setFoodCalendar((prevCalendar) => {
-        const updatedCalendar = { ...prevCalendar };
-        const otherRecipes = updatedCalendar[weekday].filter(
-          (recipe) => recipe.id !== id
-        );
-        updatedCalendar[weekday] = [...otherRecipes, recipe];
-        const remainingRecipes = updatedCalendar[prevWeekday].filter(
-          (recipe) => recipe.id !== id
-        );
-        updatedCalendar[prevWeekday] = remainingRecipes;
-        return updatedCalendar;
-      });
+      const updatedCalendar = moveRecipeInCalendar(
+        foodCalendar,
+        prevWeekday,
+        weekday,
+        recipe
+      );
+
+      setFoodCalendar(updatedCalendar);
+      updateMealPlan(updatedCalendar);
     }
   };
 

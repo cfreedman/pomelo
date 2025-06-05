@@ -32,6 +32,55 @@ export interface MealPlan {
   items: FoodCalendar;
 }
 
+// [FEATURE]: Need more logic to allow for multiple copies of recipe in each day and possibly break/lunch/dinner/snack split
+
+export const addRecipeToCalendar = (
+  prevCalendar: FoodCalendar,
+  landingWeekday: Weekday,
+  targetRecipe: BaseRecipe
+): FoodCalendar => {
+  const updatedCalendar = { ...prevCalendar };
+  const otherRecipes = updatedCalendar[landingWeekday].filter(
+    (recipe) => recipe.id !== targetRecipe.id
+  );
+
+  updatedCalendar[landingWeekday] = [...otherRecipes, targetRecipe];
+  return updatedCalendar;
+};
+
+export const deleteRecipeFromCalendar = (
+  prevCalendar: FoodCalendar,
+  targetWeekday: Weekday,
+  targetRecipe: BaseRecipe
+): FoodCalendar => {
+  const updatedCalendar = { ...prevCalendar };
+  updatedCalendar[targetWeekday] = updatedCalendar[targetWeekday].filter(
+    (recipe) => recipe.id !== targetRecipe.id
+  );
+
+  return updatedCalendar;
+};
+
+export const moveRecipeInCalendar = (
+  prevCalendar: FoodCalendar,
+  sourceWeekday: Weekday,
+  targetWeekday: Weekday,
+  targetRecipe: BaseRecipe
+): FoodCalendar => {
+  const updatedCalendar = { ...prevCalendar };
+
+  updatedCalendar[sourceWeekday] = updatedCalendar[sourceWeekday].filter(
+    (recipe) => recipe.id !== targetRecipe.id
+  );
+
+  const otherRecipes = updatedCalendar[targetWeekday].filter(
+    (recipe) => recipe.id !== targetRecipe.id
+  );
+  updatedCalendar[targetWeekday] = [...otherRecipes, targetRecipe];
+
+  return updatedCalendar;
+};
+
 export const getDateString = (date: Date): string => {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
     2,

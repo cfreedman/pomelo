@@ -59,7 +59,7 @@ export const useMealPlanById = (weekStart: Date) => {
   const queryClient = useQueryClient();
   const serializedWeekStart = getDateString(weekStart);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["meal-plans", serializedWeekStart],
     queryFn: () => fetchMealPlanById(serializedWeekStart),
   });
@@ -84,8 +84,9 @@ export const useMealPlanById = (weekStart: Date) => {
   });
 
   return {
-    mealPlan: data || [],
+    mealPlan: data,
     isLoading,
+    isError,
     updateMealPlan: updateMealPlanMutation.mutate,
     isUpdating: updateMealPlanMutation.isPending,
     deleteMealPlan: deleteMealPlanMutation.mutate,
