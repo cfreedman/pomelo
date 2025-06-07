@@ -1,0 +1,75 @@
+services:
+  db:
+    container_name: pomelo-db
+    build:
+      context: .
+      dockerfile: Dockerfile-pg
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: pomelo-db
+    ports:
+      - "5432:5432"
+
+  weaviate:
+    image: cr.weaviate.io/semitechnologies/weaviate:1.31.0
+    ports:
+      - "8081:8081"
+      - "50051:50051"
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    restart: on-failure:0
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+      PERSISTENCE_DATA_PATH: "/var/lib/weaviate"
+      ENABLE_API_BASED_MODULES: "true"
+      ENABLE_MODULES: "text2vec-ollama,generative-ollama"
+      CLUSTER_HOSTNAME: "node1"
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+
+  flask-app:
+    build: ./app
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+      - /app/.venv
+    environment:
+      - FLASK_DEBUG=1
+    command: uv run -- flask run --host 0.0.0.0
+
+  flask-rag:
+    build: ./rag
+    depends_on:
+      - flask-app
+      - weaviate
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_DEBUG=1
+      - WEAVIATE_PORT=8081
+      - WEAVIATE_GRPC_PORT=50051
+    command: uv run -- flask run --host 0.0.0.0
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: collum.freedman@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  weaviate_data:
+  ollama:
