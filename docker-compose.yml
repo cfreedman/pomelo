@@ -1,6 +1,5 @@
 services:
   db:
-    container_name: pomelo-db
     build:
       context: .
       dockerfile: Dockerfile-pg
@@ -12,12 +11,21 @@ services:
       - "5432:5432"
 
   weaviate:
-    image: cr.weaviate.io/semitechnologies/weaviate:1.31.0
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8081"
+      - --scheme
+      - http
+    image: cr.weaviate.io/semitechnologies/weaviate:1.30.0
     ports:
       - "8081:8081"
       - "50051:50051"
-    volumes:
-      - weaviate_data:/var/lib/weaviate
+    # volumes:
+    #   - weaviate_data:/var/lib/weaviate
+    depends_on:
+      - ollama
     restart: on-failure:0
     environment:
       QUERY_DEFAULTS_LIMIT: 25
@@ -41,7 +49,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - .:/app
+      - ./app:/app
       - /app/.venv
     environment:
       - FLASK_DEBUG=1
@@ -50,15 +58,18 @@ services:
   flask-rag:
     build: ./rag
     depends_on:
-      - flask-app
+      # - flask-app
       - weaviate
     ports:
       - "5001:5001"
+    volumes:
+      - ./rag:/app
+      - /app/.venv
     environment:
       - FLASK_DEBUG=1
       - WEAVIATE_PORT=8081
       - WEAVIATE_GRPC_PORT=50051
-    command: uv run -- flask run --host 0.0.0.0
+    command: uv run -- python app.py
 
   pgadmin:
     image: dpage/pgadmin4
@@ -71,5 +82,5 @@ services:
       - db
 
 volumes:
-  weaviate_data:
+  # weaviate_data:
   ollama:
