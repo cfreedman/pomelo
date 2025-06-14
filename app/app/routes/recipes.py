@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from sqlalchemy import select
 
-from app import db
+from app.extensions import db
 from app.models import Recipe
 import app.schema.recipes as schema
 from app.services import create_new_recipe, update_existing_recipe
@@ -28,6 +28,24 @@ def get_recipe_by_id(id: int):
     result = schema.Recipe.model_validate(recipe.to_recipe_schema()).model_dump()
 
     return jsonify(result)
+
+
+@recipes_bp.post("/")
+def get_recipes_by_ids():
+    recipe_ids = request.get_json()
+
+    recipes = (
+        db.session.execute(select(Recipe).where(Recipe.id.in_(recipe_ids)))
+        .scalars()
+        .all()
+    )
+
+    response = [
+        schema.Recipe.model_validate(recipe.to_recipe_schema()).model_dump()
+        for recipe in recipes
+    ]
+
+    return jsonify(response)
 
 
 @recipes_bp.post("/")
