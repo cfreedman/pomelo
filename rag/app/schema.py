@@ -31,6 +31,20 @@ class Recipe(BaseModel):
     tags: List[Tag]
     ingredients: List[IngredientWithAmount]
 
+    def to_string(self) -> str:
+        name = f"Recipe: {self.name}\n"
+        features = f"Features: {self.cusine}, {self.meal_type}\n"
+        servings = f"Servings: {self.servings}\n"
+        ingredients = "\n".join(
+            [
+                f"{ingredient.quantity} {ingredient.units} {ingredient.name}"
+                for ingredient in self.ingredients
+            ]
+        )
+        tags = "Tags: " + " ".join([f"{tag.name}" for tag in self.tags])
+
+        return name + features + servings + ingredients + tags
+
 
 class BaseRecipeWithAmount(BaseModel):
     id: int

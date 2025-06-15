@@ -1,8 +1,9 @@
 from langchain.output_parsers import PydanticOutputParser
+from langchain_core.prompts import PromptTemplate
 
 from rag.app.schema import FoodCalendar
 
-meal_plan_template = """
+meal_plan_prompt = """
 You are a helpful assistant who is knowledgeable at crafting weekly meal plans
 according to some input instructions by users and specific constraints. Use the context below and those specific recipes to form your answer:
 
@@ -57,5 +58,7 @@ This defines each of the weekdays and gives list of recipes taking the form
 
 Do no include any extra explanation or markdown, just the JSON string.
 """
+
+meal_plan_template = PromptTemplate.from_template(meal_plan_prompt)
 
 meal_plan_parser = PydanticOutputParser(pydantic_object=FoodCalendar)

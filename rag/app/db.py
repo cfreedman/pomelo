@@ -4,7 +4,7 @@ import weaviate
 from weaviate.classes.config import Configure, Property, DataType
 from weaviate.connect import ConnectionParams
 
-from rag.app.ollama import EmbeddingClient
+from rag.app.ollama import OllamaClient
 from rag.app.schema import Recipe
 
 WEAVIATE_PORT = os.environ["WEAVIATE_PORT"]
@@ -15,7 +15,7 @@ print(WEAVIATE_GRPC_PORT)
 
 
 class VectorDatabaseClient:
-    def __init__(self, embedding_client: EmbeddingClient):
+    def __init__(self, embedding_client: OllamaClient):
         self.client = weaviate.WeaviateClient(
             connection_params=ConnectionParams.from_params(
                 http_host="weaviate",
