@@ -71,6 +71,19 @@ services:
       - WEAVIATE_GRPC_PORT=50051
     command: uv run -- python app.py
 
+  client:
+    build: ./client
+    depends_on:
+      - flask-app
+      - db
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - HOST=0.0.0.0
+
   pgadmin:
     image: dpage/pgadmin4
     environment:

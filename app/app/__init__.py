@@ -15,7 +15,7 @@ def create_app():
     flask_app = Flask(__name__)
     CORS(flask_app)
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = (
-        "postgresql://postgres:postgres@localhost:5432/pomelo"
+        "postgresql://postgres:postgres@db:5432/pomelo"
     )
 
     db.init_app(flask_app)

@@ -279,7 +279,7 @@ INSERT INTO shopping_lists (week_start) VALUES
 ('2025-07-06'),
 ('2025-07-13'),
 ('2025-07-20'),
-('2025-07-27')
+('2025-07-27');
 
 INSERT INTO ingredient_recipe_bridge (recipe_id, ingredient_id, quantity) VALUES
 (1, 1, 500),
