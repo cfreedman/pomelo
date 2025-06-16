@@ -4,7 +4,7 @@ import Calendar from "@/components/Calendar";
 
 export default function CalendarPage(): JSX.Element {
   return (
-    <div>
+    <div className="w-full">
       <Calendar />
     </div>
   );

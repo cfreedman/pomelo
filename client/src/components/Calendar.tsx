@@ -1,5 +1,6 @@
 import React, { JSX, useEffect } from "react";
 import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { BaseRecipe, BASE_RECIPE_DATA } from "@/lib/recipes";
 import {
@@ -18,6 +19,8 @@ import {
 } from "@/lib/meal_plan";
 import { useNavigate, useParams } from "react-router";
 import { useMealPlanById, useMealPlans } from "@/hooks/useMealPlans";
+import RecipeSuggestions from "./RecipeSuggestions";
+import { Input } from "./ui/input";
 
 interface RecipeItemProps {
   name: string;
@@ -77,7 +80,7 @@ const CalendarDay = ({
     <div
       onDrop={handleDrop}
       onDragOver={handleDragOver}
-      className="flex flex-col px-2 grow shrink basis-[0px] h-[600px] items-center border-r-2 border-solid border-gray-100 first:border-l-2"
+      className="flex flex-col px-2 grow shrink basis-[0px] h-[600px] items-center"
     >
       <div className="flex flex-col items-center justify-center bg-blue-500 rounded-full w-10 h-10 my-2">
         <h3 className="text-white font-bold">{date}</h3>
@@ -119,6 +122,10 @@ export default function Calendar(): JSX.Element {
 
   const [foodCalendar, setFoodCalendar] =
     useState<FoodCalendar>(BLANK_CALENDAR);
+
+  const [recipeSearch, setRecipeSearch] = useState<string | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     if (mealPlan) {
@@ -190,32 +197,38 @@ export default function Calendar(): JSX.Element {
 
   return (
     <>
-      <div className="flex w-[1800px] my-10">
-        <div className="flex">
+      <div className="flex w-full my-10">
+        <div className="flex w-full">
           <button
+            className="cursor-pointer"
             onClick={() => {
               navigate(`/calendar/${getDateString(previousSunday)}`);
             }}
           >
-            Previous
+            <ChevronLeft size={65} className="text-blue-500" />
           </button>
-          {WEEKDAYS.map((day) => (
-            <CalendarDay
-              key={day}
-              weekday={day as Weekday}
-              date={currentWeekdays[day].getDate().toString()}
-              recipes={foodCalendar[day as Weekday]}
-              handleDrop={(e: React.DragEvent) => handleDrop(e, day as Weekday)}
-              handleDragOver={handleDragOver}
-              handleDragRecipeCard={handleDragRecipeCard}
-            />
-          ))}
+          <div className="flex w-full divide-x divide-gray-100">
+            {WEEKDAYS.map((day) => (
+              <CalendarDay
+                key={day}
+                weekday={day as Weekday}
+                date={currentWeekdays[day].getDate().toString()}
+                recipes={foodCalendar[day as Weekday]}
+                handleDrop={(e: React.DragEvent) =>
+                  handleDrop(e, day as Weekday)
+                }
+                handleDragOver={handleDragOver}
+                handleDragRecipeCard={handleDragRecipeCard}
+              />
+            ))}
+          </div>
           <button
+            className="cursor-pointer"
             onClick={() => {
               navigate(`/calendar/${getDateString(nextSunday)}`);
             }}
           >
-            Next
+            <ChevronRight size={65} className="text-blue-500" />
           </button>
         </div>
       </div>
@@ -230,6 +243,25 @@ export default function Calendar(): JSX.Element {
           />
         ))}
       </ul>
+      <div className="w-full flex flex-auto p-2">
+        <div className="m-5 w-1/2">
+          <RecipeSuggestions
+            recipes={BASE_RECIPE_DATA.filter((recipe) =>
+              recipeSearch ? recipe.name.startsWith(recipeSearch) : true
+            )}
+          />
+          <Input
+            placeholder="Search for suggested recipes here..."
+            type="text"
+            value={recipeSearch}
+            onChange={(e) => setRecipeSearch(e.target.value)}
+          />
+        </div>
+        <div className="m-5 w-1/2 p-2">
+          <RecipeSuggestions recipes={BASE_RECIPE_DATA} />
+          <h3>Popular Choices</h3>
+        </div>
+      </div>
     </>
   );
 }
