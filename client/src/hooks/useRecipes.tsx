@@ -7,7 +7,7 @@ import {
 } from "@/lib/recipes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const useIngredients = () => {
+export const useRecipes = () => {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({

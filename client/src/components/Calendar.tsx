@@ -2,7 +2,7 @@ import React, { JSX, useEffect } from "react";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { BaseRecipe, BASE_RECIPE_DATA } from "@/lib/recipes";
+import { BaseRecipe } from "@/lib/recipes";
 import {
   addRecipeToCalendar,
   BLANK_CALENDAR,
@@ -19,8 +19,9 @@ import {
 } from "@/lib/meal_plan";
 import { useNavigate, useParams } from "react-router";
 import { useMealPlanById, useMealPlans } from "@/hooks/useMealPlans";
-import RecipeSuggestions from "./RecipeSuggestions";
 import { Input } from "./ui/input";
+import { Badge } from "./ui/badge";
+import { useRecipes } from "@/hooks/useRecipes";
 
 interface RecipeItemProps {
   name: string;
@@ -77,23 +78,67 @@ const CalendarDay = ({
   handleDragRecipeCard,
 }: CalendarDayProps): React.ReactNode => {
   return (
-    <div
-      onDrop={handleDrop}
-      onDragOver={handleDragOver}
-      className="flex flex-col px-2 grow shrink basis-[0px] h-[600px] items-center"
-    >
-      <div className="flex flex-col items-center justify-center bg-blue-500 rounded-full w-10 h-10 my-2">
-        <h3 className="text-white font-bold">{date}</h3>
+    <div className="flex flex-col px-2 grow shrink basis-[0px] h-[600px] items-center">
+      <div className="flex-auto">
+        <div className="flex flex-col items-center justify-center bg-blue-500 rounded-full w-10 h-10 my-2">
+          <h3 className="text-white font-bold">{date}</h3>
+        </div>
       </div>
       <h3 className="calendarHeader text-blue-500">{weekday}</h3>
-      {recipes.map((recipe) => (
-        <CalendarRecipeCard
-          key={recipe.id}
-          recipe={recipe}
-          handleDrag={(event) => handleDragRecipeCard(event, recipe, weekday)}
-        />
-      ))}
-      <div></div>
+      <div
+        className="flex flex-col h-full w-full bg-gray-100 rounded-sm my-2 p-2"
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+      >
+        {recipes.map((recipe) => (
+          <CalendarRecipeCard
+            key={recipe.id}
+            recipe={recipe}
+            handleDrag={(event) => handleDragRecipeCard(event, recipe, weekday)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+interface RecipeSuggestionsProps {
+  recipes: BaseRecipe[];
+  handleDragItem: (e: React.DragEvent, recipe: BaseRecipe) => void;
+}
+
+const RecipeSuggestions = ({
+  recipes,
+  handleDragItem,
+}: RecipeSuggestionsProps) => {
+  const [recipeSearch, setRecipeSearch] = useState<string | undefined>(
+    undefined
+  );
+
+  const filteredRecipes = recipes.filter((recipe) =>
+    recipe.name.toLowerCase().includes(recipeSearch?.toLowerCase() || "")
+  );
+
+  return (
+    <div>
+      <div className="w-full mt-3 mb-5 flex flex-wrap gap-2">
+        {filteredRecipes.map((recipe) => (
+          <Badge
+            draggable
+            onDragStart={(e) => handleDragItem(e, recipe)}
+            key={recipe.id}
+          >
+            {recipe.name}
+          </Badge>
+        ))}
+      </div>
+      <Input
+        className="mt-3"
+        placeholder="Search for suggested recipes here..."
+        type="text"
+        value={recipeSearch}
+        onChange={(e) => setRecipeSearch(e.target.value)}
+      />
     </div>
   );
 };
@@ -120,12 +165,15 @@ export default function Calendar(): JSX.Element {
   const { mealPlan, isError, updateMealPlan } = useMealPlanById(currentSunday);
   const { addMealPlan } = useMealPlans();
 
+  const { recipes } = useRecipes();
+
+  const baseRecipes: BaseRecipe[] = recipes.map((recipe) => ({
+    name: recipe.name,
+    id: recipe.id,
+  }));
+
   const [foodCalendar, setFoodCalendar] =
     useState<FoodCalendar>(BLANK_CALENDAR);
-
-  const [recipeSearch, setRecipeSearch] = useState<string | undefined>(
-    undefined
-  );
 
   useEffect(() => {
     if (mealPlan) {
@@ -133,11 +181,9 @@ export default function Calendar(): JSX.Element {
     }
   }, [mealPlan]);
 
-  const handleDragRecipeItem = (
-    e: React.DragEvent,
-    seralizedRecipe: string
-  ) => {
-    e.dataTransfer.setData("recipe", seralizedRecipe);
+  const handleDragRecipeItem = (e: React.DragEvent, recipe: BaseRecipe) => {
+    const serializedRecipe = `${recipe.id}-${recipe.name}`;
+    e.dataTransfer.setData("recipe", serializedRecipe);
   };
 
   const handleDragRecipeCard = (
@@ -232,33 +278,25 @@ export default function Calendar(): JSX.Element {
           </button>
         </div>
       </div>
-      <ul>
-        {BASE_RECIPE_DATA.map(({ id, name }) => (
-          <RecipeItem
-            key={id}
-            name={name}
-            handleDrag={(e: React.DragEvent) =>
-              handleDragRecipeItem(e, `${id}-${name}`)
-            }
-          />
-        ))}
-      </ul>
       <div className="w-full flex flex-auto p-2">
         <div className="m-5 w-1/2">
           <RecipeSuggestions
-            recipes={BASE_RECIPE_DATA.filter((recipe) =>
-              recipeSearch ? recipe.name.startsWith(recipeSearch) : true
-            )}
-          />
-          <Input
-            placeholder="Search for suggested recipes here..."
-            type="text"
-            value={recipeSearch}
-            onChange={(e) => setRecipeSearch(e.target.value)}
+            recipes={baseRecipes}
+            handleDragItem={handleDragRecipeItem}
           />
         </div>
-        <div className="m-5 w-1/2 p-2">
-          <RecipeSuggestions recipes={BASE_RECIPE_DATA} />
+        <div className="m-5 w-1/2">
+          <div className="w-full mt-3 mb-5 flex flex-wrap gap-2">
+            {baseRecipes.map((recipe) => (
+              <Badge
+                key={recipe.id}
+                draggable
+                onDragStart={(e) => handleDragRecipeItem(e, recipe)}
+              >
+                {recipe.name}
+              </Badge>
+            ))}
+          </div>
           <h3>Popular Choices</h3>
         </div>
       </div>

@@ -264,7 +264,7 @@ INSERT INTO meal_plans (week_start) VALUES
 ('2025-07-28'),
 ('2025-07-29'),
 ('2025-07-30'),
-('2025-07-31')
+('2025-07-31');
 
 INSERT INTO shopping_lists (week_start) VALUES
 ('2025-05-04'),
