@@ -3,15 +3,15 @@ from langchain_core.prompts import PromptTemplate
 
 from rag.app.schema import FoodCalendar
 
-meal_plan_prompt = """
+food_calendar_prompt = """
 You are a helpful assistant who is knowledgeable at crafting weekly meal plans
 according to some input instructions by users and specific constraints. Use the context below and those specific recipes to form your answer:
 
 Recipes:
 {recipes}
 
-Original Question:
-{original_question}
+User Input:
+{user_input}
 
 Respond with a JSON object structured like this:
 
@@ -56,9 +56,26 @@ Respond with a JSON object structured like this:
 This defines each of the weekdays and gives list of recipes taking the form
 { "id": integer, "name": string, "quantity": string } for each one.
 
-Do no include any extra explanation or markdown, just the JSON string.
+Do not include any extra explanation or markdown, just the JSON string.
 """
 
-meal_plan_template = PromptTemplate.from_template(meal_plan_prompt)
+food_calendar_template = PromptTemplate.from_template(food_calendar_prompt)
 
-meal_plan_parser = PydanticOutputParser(pydantic_object=FoodCalendar)
+food_calendar_parser = PydanticOutputParser(pydantic_object=FoodCalendar)
+
+input_processor_prompt = """
+You are a helpful assistant who is knowledgeable at crafting weekly meal plans
+according to some input instructions by users and specific constraints. Use the user input below and extract
+key components, concepts, or entity that relate to food and recipes such as ingredients, types of food, cuisines, and
+other cooking related concepts:
+
+User Input:
+{user_input}
+
+Return a list of the extract keywords and concepts. If you find that the user input is too unrelated to food and cooking
+and no relevant keywords can be extracted for it, return 'Invalid user input - need more information'.
+
+Do not include any extract explanation or markdown.
+"""
+
+input_processor_template = PromptTemplate.from_template(input_processor_prompt)

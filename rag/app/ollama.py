@@ -3,7 +3,10 @@ from typing import List, Sequence
 from ollama import Client
 
 from rag.app.schema import FoodCalendar, Recipe
-from rag.app.prompts import meal_plan_parser, meal_plan_template
+from rag.app.prompts import (
+    meal_plan_parser,
+    meal_plan_template,
+)
 
 
 class OllamaClient:
@@ -37,10 +40,13 @@ class OllamaClient:
                     raise
                 time.sleep(self.retry_delay)
 
-    def generate_meal_plan(self, recipes: List[Recipe], question: str) -> FoodCalendar:
+    def generate_meal_plan(
+        self, recipes: List[Recipe], user_input: str
+    ) -> FoodCalendar:
         recipes_string = "\n\n".join([recipe.to_string() for recipe in recipes])
+
         prompt = meal_plan_template.invoke(
-            {"recipes": recipes_string, "question": question}
+            {"recipes": recipes_string, "user_input": user_input}
         ).to_string()
 
         attempt = 0
