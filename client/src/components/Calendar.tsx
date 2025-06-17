@@ -38,21 +38,29 @@ const RecipeItem = ({ name, handleDrag }: RecipeItemProps): JSX.Element => {
 
 interface CalendarRecipeCardProps {
   recipe: BaseRecipe;
+  active: boolean;
+  handleActivate: () => void;
   handleDrag: React.DragEventHandler<HTMLDivElement>;
 }
 
 const CalendarRecipeCard = ({
   recipe,
+  active,
+  handleActivate,
   handleDrag,
 }: CalendarRecipeCardProps): React.ReactNode => {
   return (
-    <div
-      className="my-3 py-3 px-2 w-full bg-blue-500 rounded-md"
+    <Badge
+      className={`my-3 py-3 px-2 w-full brutal-badge bg-white rounded-sm text-md text-black font-bold hover:bg-breaker-bay-200 active:bg-breaker-bay-600 ${
+        active && "bg-breaker-bay-400"
+      }`}
       draggable
+      onClick={() => handleActivate()}
       onDragStart={handleDrag}
     >
-      <h3 className="text-white font-bold">{recipe.name}</h3>
-    </div>
+      <h3>{recipe.name}</h3>
+      <h3>x2</h3>
+    </Badge>
   );
 };
 
@@ -60,6 +68,8 @@ interface CalendarDayProps {
   weekday: Weekday;
   date: string;
   recipes: BaseRecipe[];
+  activeRecipe?: string;
+  handleActivate: (id: string) => void;
   handleDrop: React.DragEventHandler<HTMLDivElement>;
   handleDragOver: React.DragEventHandler<HTMLDivElement>;
   handleDragRecipeCard: (
@@ -73,6 +83,7 @@ const CalendarDay = ({
   weekday,
   date,
   recipes,
+  handleActivate,
   handleDrop,
   handleDragOver,
   handleDragRecipeCard,
@@ -80,11 +91,13 @@ const CalendarDay = ({
   return (
     <div className="flex flex-col px-2 grow shrink basis-[0px] h-[600px] items-center">
       <div className="flex-auto">
-        <div className="flex flex-col items-center justify-center bg-blue-500 rounded-full w-10 h-10 my-2">
-          <h3 className="text-white font-bold">{date}</h3>
+        <div className="flex flex-col items-center justify-center bg-blue-500 rounded-full border-2 border-black w-15 h-15 my-2">
+          <h3 className="text-white font-bold text-[30px] outlined-text">
+            {date}
+          </h3>
         </div>
       </div>
-      <h3 className="calendarHeader text-blue-500">{weekday}</h3>
+      <h3 className="calendarHeader text-blue-500 font-bold">{weekday}</h3>
       <div
         className="flex flex-col h-full w-full bg-gray-100 rounded-sm my-2 p-2"
         onDrop={handleDrop}
@@ -94,6 +107,9 @@ const CalendarDay = ({
           <CalendarRecipeCard
             key={recipe.id}
             recipe={recipe}
+            handleActivate={() => {
+              handleActivate(recipe.id);
+            }}
             handleDrag={(event) => handleDragRecipeCard(event, recipe, weekday)}
           />
         ))}
@@ -120,10 +136,11 @@ const RecipeSuggestions = ({
   );
 
   return (
-    <div>
-      <div className="w-full mt-3 mb-5 flex flex-wrap gap-2">
+    <div className="flex flex-col h-[300px] relative">
+      <div className="w-full h-[200px] mt-3 mb-5 pb-1 flex flex-wrap gap-2 overflow-scroll items-start content-start">
         {filteredRecipes.map((recipe) => (
           <Badge
+            className="brutal-badge text-md bg-white text-black rounded-sm h-[32px]"
             draggable
             onDragStart={(e) => handleDragItem(e, recipe)}
             key={recipe.id}
@@ -133,7 +150,7 @@ const RecipeSuggestions = ({
         ))}
       </div>
       <Input
-        className="mt-3"
+        className="absolute bottom-0 h-[60px] text-xl border-3 border-black md:text-xl font-bold"
         placeholder="Search for suggested recipes here..."
         type="text"
         value={recipeSearch}
@@ -142,6 +159,11 @@ const RecipeSuggestions = ({
     </div>
   );
 };
+
+interface ActiveRecipeCard {
+  weekday: Weekday;
+  id: string;
+}
 
 export default function Calendar(): JSX.Element {
   const { weekStart } = useParams();
@@ -174,6 +196,8 @@ export default function Calendar(): JSX.Element {
 
   const [foodCalendar, setFoodCalendar] =
     useState<FoodCalendar>(BLANK_CALENDAR);
+
+  const [activeCard, setActiveCard] = useState<ActiveRecipeCard | null>(null);
 
   useEffect(() => {
     if (mealPlan) {
@@ -285,10 +309,11 @@ export default function Calendar(): JSX.Element {
             handleDragItem={handleDragRecipeItem}
           />
         </div>
-        <div className="m-5 w-1/2">
-          <div className="w-full mt-3 mb-5 flex flex-wrap gap-2">
+        <div className="m-5 w-1/2 relative">
+          <div className="w-full h-[200px] mt-3 mb-5 pb-1 flex flex-wrap gap-2 overflow-scroll items-start content-start">
             {baseRecipes.map((recipe) => (
               <Badge
+                className="brutal-badge text-md bg-white text-black rounded-sm"
                 key={recipe.id}
                 draggable
                 onDragStart={(e) => handleDragRecipeItem(e, recipe)}
@@ -297,7 +322,9 @@ export default function Calendar(): JSX.Element {
               </Badge>
             ))}
           </div>
-          <h3>Popular Choices</h3>
+          <h3 className="absolute bottom-0 right-0 pr-5 text-[30px] font-bold h-[60px] text-blue-600">
+            Popular Choices
+          </h3>
         </div>
       </div>
     </>

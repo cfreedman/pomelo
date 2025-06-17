@@ -172,3 +172,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+.full-background {
+  background-color: #ffff96;
+  background-image: url("https://transparenttextures.com/patterns/binding-light.png");
+}
+
+.brutal-badge {
+  border: solid 2px #121212;
+  box-shadow: 2px 2px #121212;
+}
+
+.outlined-text {
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+}
+
+.text-shadow {
+  text-shadow: 2px 2px 0px black
+}

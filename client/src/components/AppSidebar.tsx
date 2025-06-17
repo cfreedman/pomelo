@@ -24,7 +24,7 @@ import PomeloIcon from "@/assets/icons/pomelo.png";
 
 export default function AppSidebar(): JSX.Element {
   return (
-    <Sidebar>
+    <Sidebar className="full-background">
       <SidebarHeader>
         <div className="flex items-center">
           <img src={PomeloIcon} alt="Pomelo" width={60} height={60} />
@@ -36,13 +36,13 @@ export default function AppSidebar(): JSX.Element {
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-2">
-              <SidebarMenuItem className="rounded-md text-white text-center bg-breaker-bay-500">
+              <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge uppercase font-bold">
                 <Link className="flex items-center justify-center" to="/">
                   <House />
                   Home
                 </Link>
               </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-md text-white text-center bg-amber-500">
+              <SidebarMenuItem className="rounded-md text-black text-center bg-amber-500 brutal-badge uppercase font-bold">
                 <Link
                   className="flex items-center justify-center"
                   to="/recipes"
@@ -51,7 +51,7 @@ export default function AppSidebar(): JSX.Element {
                   Recipes
                 </Link>
               </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-md text-white text-center bg-thunderbird-500">
+              <SidebarMenuItem className="rounded-md text-black text-center bg-thunderbird-500 brutal-badge uppercase font-bold">
                 <Link
                   className="flex items-center justify-center"
                   to="/shopping-list"
@@ -60,13 +60,13 @@ export default function AppSidebar(): JSX.Element {
                   Shopping List
                 </Link>
               </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-md text-white text-center bg-breaker-bay-500">
+              <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge uppercase font-bold">
                 <Link className="flex items-center justify-center" to="/stores">
                   <ShoppingCart />
                   Grocery Stores
                 </Link>
               </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-md text-white text-center bg-amber-500">
+              <SidebarMenuItem className="rounded-md text-black text-center bg-amber-500 brutal-badge uppercase font-bold">
                 <Link
                   className="flex items-center justify-center"
                   to="/calendar"
@@ -75,7 +75,7 @@ export default function AppSidebar(): JSX.Element {
                   Weekly Meals
                 </Link>
               </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-md text-white text-center bg-thunderbird-500">
+              <SidebarMenuItem className="rounded-md text-black text-center bg-thunderbird-500 brutal-badge uppercase font-bold">
                 <Link className="flex items-center justify-center" to="/">
                   <Settings />
                   Settings
