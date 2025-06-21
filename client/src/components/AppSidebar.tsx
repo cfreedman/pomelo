@@ -37,7 +37,7 @@ export default function AppSidebar(): JSX.Element {
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-2">
-              <AnimateGroup>
+              <AnimateGroup type="slide" direction="right" offset="small">
                 <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge uppercase font-bold">
                   <Link className="flex items-center justify-center" to="/">
                     <House />

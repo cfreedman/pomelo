@@ -122,34 +122,32 @@ export default function RecipeList(): JSX.Element {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <AnimateGroup type="fade">
-              {pageRecipes?.map((recipe) => (
-                <TableRow
-                  key={recipe.name}
-                  className="hover:bg-breaker-bay-200 border-y-1 border-gray-300 hover:scale-105"
-                >
-                  <TableCell className="text-left text-lg py-5">
-                    {recipe.name}
-                  </TableCell>
-                  <TableCell className="text-left text-lg py-5 flex gap-1">
-                    {recipe.tags.map(({ name }) => (
-                      <TagIcon
-                        key={name}
-                        name={name.toLowerCase()}
-                        width={30}
-                        height={30}
-                      />
-                    ))}
-                  </TableCell>
-                  <TableCell className="text-left text-lg py-5">
-                    {recipe.mealType}
-                  </TableCell>
-                  <TableCell className="text-right text-lg py-5">
-                    {recipe.cuisine}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </AnimateGroup>
+            {pageRecipes?.map((recipe) => (
+              <TableRow
+                key={recipe.name}
+                className="hover:bg-breaker-bay-200 border-y-1 border-gray-300 hover:scale-105"
+              >
+                <TableCell className="text-left text-lg py-5">
+                  {recipe.name}
+                </TableCell>
+                <TableCell className="text-left text-lg py-5 flex gap-1">
+                  {recipe.tags.map(({ name }) => (
+                    <TagIcon
+                      key={name}
+                      name={name.toLowerCase()}
+                      width={30}
+                      height={30}
+                    />
+                  ))}
+                </TableCell>
+                <TableCell className="text-left text-lg py-5">
+                  {recipe.mealType}
+                </TableCell>
+                <TableCell className="text-right text-lg py-5">
+                  {recipe.cuisine}
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
         <PaginationControls

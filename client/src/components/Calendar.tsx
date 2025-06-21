@@ -138,7 +138,7 @@ const RecipeSuggestions = ({
 
   return (
     <div className="flex flex-col h-[300px] relative">
-      <AnimateGroup>
+      <AnimateGroup type="slide" direction="up" offset="small">
         <div className="w-full h-[200px] mt-3 mb-5 pb-1 flex flex-wrap gap-2 overflow-scroll items-start content-start">
           {filteredRecipes.map((recipe) => (
             <Badge
@@ -152,7 +152,7 @@ const RecipeSuggestions = ({
           ))}
         </div>
       </AnimateGroup>
-      <AnimateGroup>
+      <AnimateGroup type="slide" direction="up" offset="small">
         <Input
           className="absolute bottom-0 h-[60px] text-xl border-3 border-black md:text-xl font-bold"
           placeholder="Search for suggested recipes here..."

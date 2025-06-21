@@ -9,7 +9,7 @@ export default function CalendarPage(): JSX.Element {
     <div className="flex justify-between w-full">
       <RecipeList />
       <RecipeContainer>
-        <AnimateGroup type="slide" direction="up" offset={10}>
+        <AnimateGroup type="slide" direction="up" offset="medium">
           <Recipe name={greenCurry.name} ingredients={greenCurry.ingredients} />
         </AnimateGroup>
       </RecipeContainer>

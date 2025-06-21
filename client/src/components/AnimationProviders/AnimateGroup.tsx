@@ -4,7 +4,7 @@ interface AnimateGroupProps {
   children: React.ReactNode | React.ReactNode[];
   type: "fade" | "slide";
   direction?: "left" | "right" | "up" | "down";
-  offset?: number;
+  offset: "small" | "medium" | "large";
   initialDelay?: number;
   staggerDelay?: number;
 }
@@ -13,7 +13,7 @@ export default function AnimateGroup({
   children,
   type = "fade",
   direction = "right",
-  offset = 0,
+  offset = "small",
   initialDelay = 0,
   staggerDelay = 100,
 }: AnimateGroupProps): JSX.Element {
@@ -26,25 +26,9 @@ export default function AnimateGroup({
   }, []);
 
   const animationClass =
-    type === "fade" ? "animate-fade-in" : "animate-slide-in";
-
-  let initialTransform: string;
-  switch (direction) {
-    case "left":
-      initialTransform = `translateX(${offset}%)`;
-      break;
-    case "right":
-      initialTransform = `translateX(-${offset}%)`;
-      break;
-    case "up":
-      initialTransform = `translateY(${offset}%)`;
-      break;
-    case "down":
-      initialTransform = `translateY(-${offset}%)`;
-      break;
-    default:
-      initialTransform = `translateX(0)`;
-  }
+    type === "fade"
+      ? "animate-fade-in"
+      : `animate-slide-in-${direction}-${offset}`;
 
   return (
     <>
@@ -58,22 +42,66 @@ export default function AnimateGroup({
 
         const style: React.CSSProperties & Record<string, string> = {
           animationDelay: `${index * staggerDelay + initialDelay}ms`,
-          "--tw-transform-from": initialTransform,
-          ...typedChild.props.style,
         };
 
-        const initialClass = !animate ? "opacity-0 will-change-transform" : "";
-        const finalClass = animate ? "animate-slide-in" : "";
+        const className = `${
+          animate ? `opacity-0 ${animationClass}` : "opacity-0"
+        } contents`;
 
-        const className = `${initialClass} ${finalClass} ${
-          typedChild.props.className || ""
-        }`;
+        return (
+          <div className={className} style={style} key={index}>
+            {typedChild}
+          </div>
+        );
+      })}
+    </>
+  );
+}
 
-        return React.cloneElement(typedChild, {
-          style,
-          className,
-          children: typedChild.props.children,
-        });
+export function AnimateTableRows({
+  children,
+  type = "fade",
+  direction = "right",
+  offset = "small",
+  initialDelay = 0,
+  staggerDelay = 100,
+}: AnimateGroupProps): JSX.Element {
+  const [animate, setAnimate] = useState(false);
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      setAnimate(true);
+    });
+  }, []);
+
+  const animationClass =
+    type === "fade"
+      ? "animate-fade-in"
+      : `animate-slide-in-${direction}-${offset}`;
+
+  return (
+    <>
+      {React.Children.map(children, (child, index) => {
+        if (!React.isValidElement(child)) {
+          return child;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const typedChild = child as React.ReactElement<any>;
+
+        const style: React.CSSProperties & Record<string, string> = {
+          animationDelay: `${index * staggerDelay + initialDelay}ms`,
+        };
+
+        const className = `${
+          animate ? `opacity-0 ${animationClass}` : "opacity-0"
+        } contents`;
+
+        return (
+          <div className={className} style={style} key={index}>
+            {typedChild}
+          </div>
+        );
       })}
     </>
   );
