@@ -18,7 +18,7 @@ export default function SearchInput({
       <Input
         type="text"
         placeholder="Search recipes..."
-        className="pl-8"
+        className="pl-8 h-[60px] text-xl border-3 border-black md:text-xl font-bold"
         value={searchInput}
         onChange={(e) => handleSearchChange(e.target.value)}
       />

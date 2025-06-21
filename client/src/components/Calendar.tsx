@@ -22,6 +22,7 @@ import { useMealPlanById, useMealPlans } from "@/hooks/useMealPlans";
 import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import { useRecipes } from "@/hooks/useRecipes";
+import AnimateGroup from "./AnimationProviders/AnimateGroup";
 
 interface RecipeItemProps {
   name: string;
@@ -137,25 +138,29 @@ const RecipeSuggestions = ({
 
   return (
     <div className="flex flex-col h-[300px] relative">
-      <div className="w-full h-[200px] mt-3 mb-5 pb-1 flex flex-wrap gap-2 overflow-scroll items-start content-start">
-        {filteredRecipes.map((recipe) => (
-          <Badge
-            className="brutal-badge text-md bg-white text-black rounded-sm h-[32px]"
-            draggable
-            onDragStart={(e) => handleDragItem(e, recipe)}
-            key={recipe.id}
-          >
-            {recipe.name}
-          </Badge>
-        ))}
-      </div>
-      <Input
-        className="absolute bottom-0 h-[60px] text-xl border-3 border-black md:text-xl font-bold"
-        placeholder="Search for suggested recipes here..."
-        type="text"
-        value={recipeSearch}
-        onChange={(e) => setRecipeSearch(e.target.value)}
-      />
+      <AnimateGroup>
+        <div className="w-full h-[200px] mt-3 mb-5 pb-1 flex flex-wrap gap-2 overflow-scroll items-start content-start">
+          {filteredRecipes.map((recipe) => (
+            <Badge
+              className="brutal-badge text-md bg-white text-black rounded-sm h-[32px]"
+              draggable
+              onDragStart={(e) => handleDragItem(e, recipe)}
+              key={recipe.id}
+            >
+              {recipe.name}
+            </Badge>
+          ))}
+        </div>
+      </AnimateGroup>
+      <AnimateGroup>
+        <Input
+          className="absolute bottom-0 h-[60px] text-xl border-3 border-black md:text-xl font-bold"
+          placeholder="Search for suggested recipes here..."
+          type="text"
+          value={recipeSearch}
+          onChange={(e) => setRecipeSearch(e.target.value)}
+        />
+      </AnimateGroup>
     </div>
   );
 };
@@ -310,18 +315,20 @@ export default function Calendar(): JSX.Element {
           />
         </div>
         <div className="m-5 w-1/2 relative">
-          <div className="w-full h-[200px] mt-3 mb-5 pb-1 flex flex-wrap gap-2 overflow-scroll items-start content-start">
-            {baseRecipes.map((recipe) => (
-              <Badge
-                className="brutal-badge text-md bg-white text-black rounded-sm"
-                key={recipe.id}
-                draggable
-                onDragStart={(e) => handleDragRecipeItem(e, recipe)}
-              >
-                {recipe.name}
-              </Badge>
-            ))}
-          </div>
+          <AnimateGroup type="slide" direction="right" offset={10}>
+            <div className="w-full h-[200px] mt-3 mb-5 pb-1 flex flex-wrap gap-2 overflow-scroll items-start content-start">
+              {baseRecipes.map((recipe) => (
+                <Badge
+                  className="brutal-badge text-md bg-white text-black rounded-sm"
+                  key={recipe.id}
+                  draggable
+                  onDragStart={(e) => handleDragRecipeItem(e, recipe)}
+                >
+                  {recipe.name}
+                </Badge>
+              ))}
+            </div>
+          </AnimateGroup>
           <h3 className="absolute bottom-0 right-0 pr-5 text-[30px] font-bold h-[60px] text-blue-600">
             Popular Choices
           </h3>

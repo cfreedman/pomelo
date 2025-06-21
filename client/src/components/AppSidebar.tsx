@@ -21,6 +21,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import PomeloIcon from "@/assets/icons/pomelo.png";
+import AnimateGroup from "./AnimationProviders/AnimateGroup";
 
 export default function AppSidebar(): JSX.Element {
   return (
@@ -36,51 +37,56 @@ export default function AppSidebar(): JSX.Element {
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-2">
-              <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge uppercase font-bold">
-                <Link className="flex items-center justify-center" to="/">
-                  <House />
-                  Home
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-md text-black text-center bg-amber-500 brutal-badge uppercase font-bold">
-                <Link
-                  className="flex items-center justify-center"
-                  to="/recipes"
-                >
-                  <CookingPot />
-                  Recipes
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-md text-black text-center bg-thunderbird-500 brutal-badge uppercase font-bold">
-                <Link
-                  className="flex items-center justify-center"
-                  to="/shopping-list"
-                >
-                  <ListCheck />
-                  Shopping List
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge uppercase font-bold">
-                <Link className="flex items-center justify-center" to="/stores">
-                  <ShoppingCart />
-                  Grocery Stores
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-md text-black text-center bg-amber-500 brutal-badge uppercase font-bold">
-                <Link
-                  className="flex items-center justify-center"
-                  to="/calendar"
-                >
-                  <CalendarDays />
-                  Weekly Meals
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem className="rounded-md text-black text-center bg-thunderbird-500 brutal-badge uppercase font-bold">
-                <Link className="flex items-center justify-center" to="/">
-                  <Settings />
-                  Settings
-                </Link>
-              </SidebarMenuItem>
+              <AnimateGroup>
+                <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge uppercase font-bold">
+                  <Link className="flex items-center justify-center" to="/">
+                    <House />
+                    Home
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem className="rounded-md text-black text-center bg-amber-500 brutal-badge uppercase font-bold">
+                  <Link
+                    className="flex items-center justify-center"
+                    to="/recipes"
+                  >
+                    <CookingPot />
+                    Recipes
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem className="rounded-md text-black text-center bg-thunderbird-500 brutal-badge uppercase font-bold">
+                  <Link
+                    className="flex items-center justify-center"
+                    to="/shopping-list"
+                  >
+                    <ListCheck />
+                    Shopping List
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge uppercase font-bold">
+                  <Link
+                    className="flex items-center justify-center"
+                    to="/stores"
+                  >
+                    <ShoppingCart />
+                    Grocery Stores
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem className="rounded-md text-black text-center bg-amber-500 brutal-badge uppercase font-bold">
+                  <Link
+                    className="flex items-center justify-center"
+                    to="/calendar"
+                  >
+                    <CalendarDays />
+                    Weekly Meals
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem className="rounded-md text-black text-center bg-thunderbird-500 brutal-badge uppercase font-bold">
+                  <Link className="flex items-center justify-center" to="/">
+                    <Settings />
+                    Settings
+                  </Link>
+                </SidebarMenuItem>
+              </AnimateGroup>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

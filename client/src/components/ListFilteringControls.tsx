@@ -11,6 +11,7 @@ import {
 } from "./ui/dropdown-menu";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { ScrollArea } from "./ui/scroll-area";
+import { Badge } from "./ui/badge";
 
 export type FilterField = "cuisine" | "mealType" | "tag";
 
@@ -46,10 +47,10 @@ export default function ListFilteringControls({
       <div className="flex">
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Button className="w-fit justify-start" variant={"destructive"}>
+            <Badge className="brutal-badge w-fit justify-start bg-orange-400">
               <ListFilter size={60} />
               <span>Filter</span>
-            </Button>
+            </Badge>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>Cuisine</DropdownMenuLabel>
@@ -106,10 +107,10 @@ export default function ListFilteringControls({
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Button className="w-fit justify-start">
+            <Badge className="brutal-badge w-fit justify-start bg-thunderbird-700">
               <SlidersHorizontal size={60} />
               <span>Group By</span>
-            </Button>
+            </Badge>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuCheckboxItem>Cuisine</DropdownMenuCheckboxItem>

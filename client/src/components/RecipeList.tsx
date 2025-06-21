@@ -15,6 +15,7 @@ import ListFilteringControls, {
   FilterSelection,
 } from "./ListFilteringControls";
 import PaginationControls from "./PaginationControls";
+import AnimateGroup from "./AnimationProviders/AnimateGroup";
 
 export default function RecipeList(): JSX.Element {
   const { data: recipes, isLoading } = useQuery<Recipe[]>({
@@ -121,32 +122,34 @@ export default function RecipeList(): JSX.Element {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {pageRecipes?.map((recipe) => (
-              <TableRow
-                key={recipe.name}
-                className="hover:bg-breaker-bay-200 even:bg-breaker-bay-100 border-none"
-              >
-                <TableCell className="text-left text-lg py-5">
-                  {recipe.name}
-                </TableCell>
-                <TableCell className="text-left text-lg py-5 flex gap-1">
-                  {recipe.tags.map(({ name }) => (
-                    <TagIcon
-                      key={name}
-                      name={name.toLowerCase()}
-                      width={30}
-                      height={30}
-                    />
-                  ))}
-                </TableCell>
-                <TableCell className="text-left text-lg py-5">
-                  {recipe.mealType}
-                </TableCell>
-                <TableCell className="text-right text-lg py-5">
-                  {recipe.cuisine}
-                </TableCell>
-              </TableRow>
-            ))}
+            <AnimateGroup type="fade">
+              {pageRecipes?.map((recipe) => (
+                <TableRow
+                  key={recipe.name}
+                  className="hover:bg-breaker-bay-200 border-y-1 border-gray-300 hover:scale-105"
+                >
+                  <TableCell className="text-left text-lg py-5">
+                    {recipe.name}
+                  </TableCell>
+                  <TableCell className="text-left text-lg py-5 flex gap-1">
+                    {recipe.tags.map(({ name }) => (
+                      <TagIcon
+                        key={name}
+                        name={name.toLowerCase()}
+                        width={30}
+                        height={30}
+                      />
+                    ))}
+                  </TableCell>
+                  <TableCell className="text-left text-lg py-5">
+                    {recipe.mealType}
+                  </TableCell>
+                  <TableCell className="text-right text-lg py-5">
+                    {recipe.cuisine}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </AnimateGroup>
           </TableBody>
         </Table>
         <PaginationControls
