@@ -58,14 +58,16 @@ export default function StoresPage(): JSX.Element {
       <TwoColumn
         left={
           <>
-            <h1>Favorite Stores</h1>
             <ul>
               {stores.map((store) => (
                 <StoreItem
                   key={store.id}
                   store={store}
                   active={activeStore?.address === store.address}
-                  handleStoreClick={() => setActiveStore(store)}
+                  handleStoreClick={() => {
+                    console.log("click");
+                    setActiveStore(store);
+                  }}
                 />
               ))}
             </ul>
@@ -144,24 +146,29 @@ const StoreItem = ({ store, active, handleStoreClick }: StoreItemProps) => {
   return (
     <li
       className={`${
-        active ? "bg-breaker-bay-400" : "bg-breaker-bay-50"
-      } hover:bg-breaker-bay-200 rounded-lg p-4 mb-2`}
+        active
+          ? "bg-breaker-bay-400"
+          : "bg-breaker-bay-50 hover:bg-breaker-bay-200"
+      } rounded-lg p-4 mb-2 border-2 border-black max-h-[120px]`}
     >
-      <button onClick={() => handleStoreClick()}>
-        <div className="flex">
-          <div className="flex flex-col items-start">
-            <h3>{store.name}</h3>
-            <p>{store.address}</p>
-          </div>
-          <ul>
-            {store.ingredients?.map((ingredient) => (
-              <li key={ingredient.id}>{ingredient.name}</li>
-            ))}
-          </ul>
-          {topThreeFoodTypes.map((foodType) => (
-            <p key={foodType}>{foodType}</p>
-          ))}
+      <button
+        className="w-full flex justify-between"
+        onClick={() => handleStoreClick()}
+      >
+        <div className="flex flex-col items-start">
+          <h3 className="font-bold text-md">{store.name}</h3>
+          <p className="text-sm text-gray-700">{store.address}</p>
         </div>
+        <ul>
+          {store.ingredients?.map((ingredient) => (
+            <li className="text-sm text-right" key={ingredient.id}>
+              {ingredient.name}
+            </li>
+          ))}
+        </ul>
+        {topThreeFoodTypes.map((foodType) => (
+          <p key={foodType}>{foodType}</p>
+        ))}
       </button>
     </li>
   );

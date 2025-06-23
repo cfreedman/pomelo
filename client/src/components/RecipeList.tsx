@@ -14,7 +14,6 @@ import ListFilteringControls, {
   FilterSelection,
 } from "./ListFilteringControls";
 import PaginationControls from "./PaginationControls";
-import AnimateGroup from "./AnimationProviders/AnimateGroup";
 
 export default function RecipeList(): JSX.Element {
   const { data: recipes, isLoading } = useQuery<Recipe[]>({

@@ -11,8 +11,8 @@ export default function TwoColumn({
 }: TwoColumnProps): JSX.Element {
   return (
     <div className="flex my-3 mx-2 w-full">
-      <div className="flex-auto">{left}</div>
-      <div className="flex-auto">{right}</div>
+      <div className="px-3 flex-auto">{left}</div>
+      <div className="px-3 flex-auto">{right}</div>
     </div>
   );
 }
