@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;700;800&display=swap');
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
@@ -125,6 +126,10 @@
   --color-thunderbird-950: #4e0101;
 }
 
+@theme {
+  --font-archivo: "Archivo", sans-serif;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -167,9 +172,11 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    @apply font-archivo;
   }
   body {
     @apply bg-background text-foreground;
+    @apply text-black;
   }
 }
 
@@ -368,6 +375,16 @@
 
   .animate-fade-in {
     animation: fadeIn 0.3s ease-in-out forwards;
+  }
+
+  .selected-shadow {
+    border: solid 1px black;
+    box-shadow: 0px 2px black;
+  }
+
+  .hover-shadow:hover {
+    border: solid 1px gray;
+    box-shadow: 0px 2px gray;
   }
 }
 

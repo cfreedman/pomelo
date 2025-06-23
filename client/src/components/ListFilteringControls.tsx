@@ -39,17 +39,17 @@ export default function ListFilteringControls({
   allFilters,
 }: ListFilterControlsProps): JSX.Element {
   return (
-    <div className="flex space-between">
+    <div className="flex justify-between">
       <SearchInput
         searchInput={searchInput}
         handleSearchChange={handleSearchChange}
       />
-      <div className="flex">
+      <div className="flex gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Badge className="brutal-badge w-fit justify-start bg-orange-400">
-              <ListFilter size={60} />
-              <span>Filter</span>
+            <Badge className="brutal-badge h-[35px] w-[100px] justify-start bg-orange-400 flex justify-center items-center">
+              <ListFilter size={85} />
+              <span className="text-md">Filter</span>
             </Badge>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -59,7 +59,9 @@ export default function ListFilteringControls({
             <DropdownMenuGroup className="py-2.5">
               <ScrollArea className="h-30">
                 {allFilters.cuisine.map((cuisine) => (
-                  <DropdownMenuCheckboxItem>{cuisine}</DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem key={cuisine}>
+                    {cuisine}
+                  </DropdownMenuCheckboxItem>
                 ))}
               </ScrollArea>
             </DropdownMenuGroup>
@@ -107,9 +109,9 @@ export default function ListFilteringControls({
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Badge className="brutal-badge w-fit justify-start bg-thunderbird-700">
+            <Badge className="brutal-badge h-[35px] w-[100px] bg-red-400 justify-start bg-orange-400 flex justify-center items-center">
               <SlidersHorizontal size={60} />
-              <span>Group By</span>
+              <span className="text-md">Group By</span>
             </Badge>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

@@ -7,7 +7,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
@@ -34,55 +33,60 @@ export default function AppSidebar(): JSX.Element {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-2">
               <AnimateGroup type="slide" direction="right" offset="small">
-                <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge uppercase font-bold">
-                  <Link className="flex items-center justify-center" to="/">
-                    <House />
+                <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge   ">
+                  <Link
+                    className="flex items-center justify-center relative"
+                    to="/"
+                  >
+                    <House className="absolute left-2" />
                     Home
                   </Link>
                 </SidebarMenuItem>
-                <SidebarMenuItem className="rounded-md text-black text-center bg-amber-500 brutal-badge uppercase font-bold">
+                <SidebarMenuItem className="rounded-md text-black text-center bg-amber-500 brutal-badge   ">
                   <Link
                     className="flex items-center justify-center"
                     to="/recipes"
                   >
-                    <CookingPot />
+                    <CookingPot className="absolute left-2" />
                     Recipes
                   </Link>
                 </SidebarMenuItem>
-                <SidebarMenuItem className="rounded-md text-black text-center bg-thunderbird-500 brutal-badge uppercase font-bold">
+                <SidebarMenuItem className="rounded-md text-black text-center bg-thunderbird-500 brutal-badge   ">
                   <Link
-                    className="flex items-center justify-center"
+                    className="flex items-center justify-center relative"
                     to="/shopping-list"
                   >
-                    <ListCheck />
+                    <ListCheck className="absolute left-2" />
                     Shopping List
                   </Link>
                 </SidebarMenuItem>
-                <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge uppercase font-bold">
+                <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge   ">
                   <Link
-                    className="flex items-center justify-center"
+                    className="flex items-center justify-center relative"
                     to="/stores"
                   >
-                    <ShoppingCart />
-                    Grocery Stores
+                    <ShoppingCart className="absolute left-2" />
+                    Stores
                   </Link>
                 </SidebarMenuItem>
-                <SidebarMenuItem className="rounded-md text-black text-center bg-amber-500 brutal-badge uppercase font-bold">
+                <SidebarMenuItem className="rounded-md text-black text-center bg-amber-500 brutal-badge   ">
                   <Link
-                    className="flex items-center justify-center"
+                    className="flex items-center justify-center relative"
                     to="/calendar"
                   >
-                    <CalendarDays />
+                    <CalendarDays className="absolute left-2" />
                     Weekly Meals
                   </Link>
                 </SidebarMenuItem>
-                <SidebarMenuItem className="rounded-md text-black text-center bg-thunderbird-500 brutal-badge uppercase font-bold">
-                  <Link className="flex items-center justify-center" to="/">
-                    <Settings />
+                <SidebarMenuItem className="rounded-md text-black text-center bg-thunderbird-500 brutal-badge   ">
+                  <Link
+                    className="flex items-center justify-center relative"
+                    to="/"
+                  >
+                    <Settings className="absolute left-2" />
                     Settings
                   </Link>
                 </SidebarMenuItem>

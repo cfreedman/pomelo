@@ -35,7 +35,7 @@ export default function PaginationControls({
         onValueChange={(e) => handleItemsPerPageChange(Number(e))}
         defaultValue="10"
       >
-        <SelectTrigger>
+        <SelectTrigger className="selected-shadow">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -51,6 +51,7 @@ export default function PaginationControls({
             <PaginationItem>
               <PaginationPrevious
                 onClick={() => handlePageChange(currentPage - 1)}
+                className="hover-shadow"
               />
             </PaginationItem>
           )}
@@ -64,6 +65,9 @@ export default function PaginationControls({
               <PaginationLink
                 isActive={i + 1 === currentPage}
                 onClick={() => handlePageChange(i + 1)}
+                className={`hover:bg-breaker-bay-100 ${
+                  i + 1 === currentPage ? "selected-shadow" : "hover-shadow"
+                }`}
               >
                 {i + 1}
               </PaginationLink>
@@ -78,6 +82,7 @@ export default function PaginationControls({
             <PaginationItem>
               <PaginationNext
                 onClick={() => handlePageChange(currentPage + 1)}
+                className="hover-shadow"
               />
             </PaginationItem>
           )}
