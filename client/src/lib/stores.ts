@@ -11,6 +11,11 @@ export interface Store {
   ingredients?: Ingredient[];
 }
 
+export interface BaseStore {
+  id: number;
+  name: string;
+}
+
 export type StoreCreate = Omit<Store, "id">;
 
 export const fetchStoreById = async (id: number): Promise<Store> => {

@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import PomeloIcon from "@/assets/icons/pomelo.png";
 import AnimateGroup from "./AnimationProviders/AnimateGroup";
+import UserBadge from "./UserBadge";
 
 export default function AppSidebar(): JSX.Element {
   return (
@@ -39,7 +40,7 @@ export default function AppSidebar(): JSX.Element {
                 <SidebarMenuItem className="rounded-md text-black text-center bg-breaker-bay-500 brutal-badge   ">
                   <Link
                     className="flex items-center justify-center relative"
-                    to="/"
+                    to="/home"
                   >
                     <House className="absolute left-2" />
                     Home
@@ -95,7 +96,13 @@ export default function AppSidebar(): JSX.Element {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <UserBadge
+          avatar="Poop"
+          name="Collum Freedman"
+          email="collum.freedman@gmail.com"
+        />
+      </SidebarFooter>
     </Sidebar>
   );
 }

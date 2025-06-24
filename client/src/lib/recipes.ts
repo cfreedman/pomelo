@@ -1,4 +1,5 @@
 import { BASE_URL } from "@/config/constants";
+import { BaseStore } from "./stores";
 
 // Data structures for data types coming in from backend
 
@@ -17,6 +18,10 @@ export interface Ingredient {
 
 export interface IngredientWithAmount extends Ingredient {
   quantity: number;
+}
+
+export interface ShoppingIngredient extends IngredientWithAmount {
+  store: BaseStore;
 }
 
 export interface Recipe {

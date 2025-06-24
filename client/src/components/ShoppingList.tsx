@@ -1,7 +1,7 @@
 import { JSX, useMemo, useState } from "react";
 
 import { ShoppingList as ShoppingListType } from "@/lib/shopping_list";
-import { IngredientWithAmount } from "@/lib/recipes";
+import { ShoppingIngredient } from "@/lib/recipes";
 
 export interface ShoppingListProps {
   shoppingList: ShoppingListType;
@@ -10,10 +10,10 @@ export interface ShoppingListProps {
 type ShoppingListGroup = "store" | "foodType";
 
 const groupShoppingListItems = (
-  items: IngredientWithAmount[],
+  items: ShoppingIngredient[],
   group: ShoppingListGroup
-): Record<string, IngredientWithAmount[]> => {
-  const result: Record<string, IngredientWithAmount[]> = {};
+): Record<string, ShoppingIngredient[]> => {
+  const result: Record<string, ShoppingIngredient[]> = {};
 
   for (const item of items) {
     if (group === "store") {
@@ -59,42 +59,70 @@ export default function ShoppingList({
 
   return (
     <div>
-      <h1 className="mb-5">Shopping List</h1>
-      <label>
-        <input
-          type="radio"
-          value="store"
-          checked={shoppingListGroup === "store"}
-          onChange={() => setShoppingListGroup("store")}
-        />
-        <span>Store</span>
-      </label>
-      <label>
-        <input
-          type="radio"
-          value="foodType"
-          checked={shoppingListGroup === "foodType"}
-          onChange={() => setShoppingListGroup("foodType")}
-        />
-        <span>Food Type</span>
-      </label>
-      <div className="flex flex-col gap-10">
+      <div className="flex w-[200px] h-[50px]">
+        <button
+          onClick={() => setShoppingListGroup("store")}
+          className={`${
+            shoppingListGroup === "store"
+              ? "border-1 border-black selected-shadow"
+              : "gray-shadow"
+          } w-1/2 flex items-center justify-center rounded-l-sm text-lg text-black bg-thunderbird-600`}
+        >
+          Store
+        </button>
+        <button
+          onClick={() => setShoppingListGroup("foodType")}
+          className={`${
+            shoppingListGroup === "foodType"
+              ? "border-1 border-black selected-shadow"
+              : "gray-shadow"
+          } w-1/2 flex items-center justify-center rounded-r-sm text-lg text-black bg-orange-peel-600`}
+        >
+          Food Type
+        </button>
+      </div>
+      <div className="flex flex-row gap-10 flex-wrap items-start">
         {Object.entries(groupedItems).map(([group, items]) => (
-          <div>
-            <h3>{group}</h3>
-            {items.map((item) => (
-              <button
-                className={`${
-                  purchasedIds.includes(item.id) && "underline"
-                } px-1`}
-                onClick={() => handleTogglePurchaseItem(item.id)}
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
+          <ShoppingListGroup
+            group={group}
+            items={items}
+            purchasedIds={purchasedIds}
+            handleTogglePurchaseItem={handleTogglePurchaseItem}
+          />
         ))}
       </div>
     </div>
   );
 }
+
+interface ShoppingListGroupProps {
+  group: string;
+  items: ShoppingIngredient[];
+  purchasedIds: string[];
+  handleTogglePurchaseItem: (item: string) => void;
+}
+
+const ShoppingListGroup = ({
+  group,
+  items,
+  purchasedIds,
+  handleTogglePurchaseItem,
+}: ShoppingListGroupProps) => {
+  return (
+    <div className="p-5 pb-7 brutal-badge rounded-sm w-[400px] border-3 border-black">
+      <h3 className="text-2xl mb-4">{group}</h3>
+      <div className="flex flex-col items-start">
+        {items.map((item) => (
+          <button
+            className={`${
+              purchasedIds.includes(item.id) && "underline"
+            } px-1 text-lg`}
+            onClick={() => handleTogglePurchaseItem(item.id)}
+          >
+            {item.name}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};

@@ -30,6 +30,7 @@ export default function MapPopup({
     if (!map) return;
 
     popupRef.current = new mapboxgl.Popup({
+      className: "mapboxgl-popup",
       closeOnClick: false,
       offset: 40,
     });
@@ -49,9 +50,11 @@ export default function MapPopup({
   }, [currentStore, map]);
 
   return createPortal(
-    <div className="bg-white text-black p-3">
-      <h3>{currentStore.name}</h3>
-      <p>{currentStore.address}</p>
+    <div className="bg-white text-black">
+      <h3 className="mb-2 text-lg font-bold text-breaker-bay-600">
+        {currentStore.name}
+      </h3>
+      <p className="mb-2">{currentStore.address}</p>
       {saveable && (
         <button
           onClick={() => {

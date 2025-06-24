@@ -8,6 +8,7 @@ import RecipesPage from "./pages/RecipesPage";
 import StoresPage from "./pages/StoresPage";
 import TestPage from "./pages/TestPage";
 import SidebarWrapper from "./pages/SidebarWrapper";
+import HomePage from "./pages/HomePage";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SidebarWrapper />}>
+            <Route path="home" element={<HomePage />} />
             <Route path="recipes" element={<RecipesPage />} />
             <Route path="stores" element={<StoresPage />} />
             <Route path="calendar/:weekStart?" element={<CalendarPage />} />

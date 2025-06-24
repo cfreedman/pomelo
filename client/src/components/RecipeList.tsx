@@ -98,7 +98,6 @@ export default function RecipeList(): JSX.Element {
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-col grow px-[30px] py-[50px]">
-        <h1>Recipes</h1>
         <ListFilteringControls
           searchInput={searchInput}
           handleSearchChange={setSearchInput}

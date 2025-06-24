@@ -1,6 +1,5 @@
 import { ListFilter, SlidersHorizontal } from "lucide-react";
 import SearchInput from "./SearchInput";
-import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,7 +46,7 @@ export default function ListFilteringControls({
       <div className="flex gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Badge className="brutal-badge h-[35px] w-[100px] justify-start bg-orange-400 flex justify-center items-center">
+            <Badge className="brutal-badge h-[35px] w-[100px] justify-start bg-thunderbird-700 flex justify-center items-center text-black">
               <ListFilter size={85} />
               <span className="text-md">Filter</span>
             </Badge>
@@ -109,7 +108,7 @@ export default function ListFilteringControls({
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Badge className="brutal-badge h-[35px] w-[100px] bg-red-400 justify-start bg-orange-400 flex justify-center items-center">
+            <Badge className="brutal-badge h-[35px] w-[100px] bg-red-400 justify-start bg-orange-peel-600 flex justify-center items-center text-black">
               <SlidersHorizontal size={60} />
               <span className="text-md">Group By</span>
             </Badge>

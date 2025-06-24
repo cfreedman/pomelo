@@ -47,14 +47,13 @@ export default function PaginationControls({
       </Select>
       <Pagination>
         <PaginationContent>
-          {currentPage != 1 && (
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => handlePageChange(currentPage - 1)}
-                className="hover-shadow"
-              />
-            </PaginationItem>
-          )}
+          <PaginationItem>
+            <PaginationPrevious
+              onClick={() => handlePageChange(currentPage - 1)}
+              className={`${currentPage === 1 && "hidden"} hover-shadow`}
+            />
+          </PaginationItem>
+
           {currentPage > 2 && (
             <PaginationItem>
               <PaginationEllipsis />
@@ -78,14 +77,14 @@ export default function PaginationControls({
               <PaginationEllipsis />
             </PaginationItem>
           )}
-          {currentPage != totalPages && (
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => handlePageChange(currentPage + 1)}
-                className="hover-shadow"
-              />
-            </PaginationItem>
-          )}
+          <PaginationItem>
+            <PaginationNext
+              onClick={() => handlePageChange(currentPage + 1)}
+              className={`${
+                currentPage === totalPages && "hidden"
+              } hover-shadow`}
+            />
+          </PaginationItem>
         </PaginationContent>
       </Pagination>
     </div>

@@ -1,9 +1,13 @@
 import { BASE_URL } from "@/config/constants";
-import { IngredientWithAmount, IngredientWithAmountCreate } from "./recipes";
+import {
+  IngredientWithAmount,
+  IngredientWithAmountCreate,
+  ShoppingIngredient,
+} from "./recipes";
 
 export interface ShoppingList {
   weekStart: Date;
-  items: IngredientWithAmount[];
+  items: ShoppingIngredient[];
 }
 
 export interface ShoppingListCreate {

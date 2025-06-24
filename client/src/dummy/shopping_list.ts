@@ -11,10 +11,7 @@ export const shoppingListDummy: ShoppingList = {
       foodType: "Fruit",
       store: {
         id: 1,
-        latitude: 37.7749,
-        longitude: -122.4194,
         name: "Walmart",
-        address: "123 Main St, San Francisco, CA",
       },
     },
     {
@@ -25,10 +22,7 @@ export const shoppingListDummy: ShoppingList = {
       foodType: "Fruit",
       store: {
         id: 2,
-        latitude: 34.0522,
-        longitude: -118.2437,
         name: "Target",
-        address: "456 Market St, Los Angeles, CA",
       },
     },
     {
@@ -39,10 +33,7 @@ export const shoppingListDummy: ShoppingList = {
       foodType: "Meat",
       store: {
         id: 3,
-        latitude: 40.7128,
-        longitude: -74.006,
         name: "Costco",
-        address: "789 Broadway, New York, NY",
       },
     },
     {
@@ -53,10 +44,7 @@ export const shoppingListDummy: ShoppingList = {
       foodType: "Dairy",
       store: {
         id: 4,
-        latitude: 41.8781,
-        longitude: -87.6298,
         name: "Kroger",
-        address: "101 State St, Chicago, IL",
       },
     },
     {
@@ -67,10 +55,7 @@ export const shoppingListDummy: ShoppingList = {
       foodType: "Dairy",
       store: {
         id: 5,
-        latitude: 29.7604,
-        longitude: -95.3698,
         name: "H-E-B",
-        address: "202 Main St, Houston, TX",
       },
     },
     {
@@ -81,10 +66,7 @@ export const shoppingListDummy: ShoppingList = {
       foodType: "Grain",
       store: {
         id: 6,
-        latitude: 47.6062,
-        longitude: -122.3321,
         name: "Safeway",
-        address: "303 Pine St, Seattle, WA",
       },
     },
     {
@@ -95,10 +77,7 @@ export const shoppingListDummy: ShoppingList = {
       foodType: "Vegetable",
       store: {
         id: 1,
-        latitude: 37.7749,
-        longitude: -122.4194,
         name: "Walmart",
-        address: "123 Main St, San Francisco, CA",
       },
     },
     {
@@ -109,10 +88,7 @@ export const shoppingListDummy: ShoppingList = {
       foodType: "Grain",
       store: {
         id: 1,
-        latitude: 37.7749,
-        longitude: -122.4194,
         name: "Walmart",
-        address: "123 Main St, San Francisco, CA",
       },
     },
     {
@@ -123,10 +99,7 @@ export const shoppingListDummy: ShoppingList = {
       foodType: "Dairy",
       store: {
         id: 2,
-        latitude: 34.0522,
-        longitude: -118.2437,
         name: "Target",
-        address: "456 Market St, Los Angeles, CA",
       },
     },
     {
@@ -137,10 +110,404 @@ export const shoppingListDummy: ShoppingList = {
       foodType: "Vegetable",
       store: {
         id: 7,
-        latitude: 42.3601,
-        longitude: -71.0589,
         name: "Whole Foods",
-        address: "404 Boylston St, Boston, MA",
+      },
+    },
+    {
+      id: "11",
+      name: "Orange Juice",
+      quantity: 2,
+      units: "bottle",
+      foodType: "Beverage",
+      store: {
+        id: 4,
+        name: "Kroger",
+      },
+    },
+    {
+      id: "12",
+      name: "Spinach",
+      quantity: 1,
+      units: "bag",
+      foodType: "Vegetable",
+      store: {
+        id: 7,
+        name: "Whole Foods",
+      },
+    },
+    {
+      id: "13",
+      name: "Yogurt",
+      quantity: 6,
+      units: "cup",
+      foodType: "Dairy",
+      store: {
+        id: 5,
+        name: "H-E-B",
+      },
+    },
+    {
+      id: "14",
+      name: "Ground Beef",
+      quantity: 3,
+      units: "lbs",
+      foodType: "Meat",
+      store: {
+        id: 3,
+        name: "Costco",
+      },
+    },
+    {
+      id: "15",
+      name: "Potatoes",
+      quantity: 10,
+      units: "pcs",
+      foodType: "Vegetable",
+      store: {
+        id: 1,
+        name: "Walmart",
+      },
+    },
+    {
+      id: "16",
+      name: "Butter",
+      quantity: 2,
+      units: "stick",
+      foodType: "Dairy",
+      store: {
+        id: 2,
+        name: "Target",
+      },
+    },
+    {
+      id: "17",
+      name: "Pasta",
+      quantity: 2,
+      units: "box",
+      foodType: "Grain",
+      store: {
+        id: 6,
+        name: "Safeway",
+      },
+    },
+    {
+      id: "18",
+      name: "Cereal",
+      quantity: 1,
+      units: "box",
+      foodType: "Grain",
+      store: {
+        id: 4,
+        name: "Kroger",
+      },
+    },
+    {
+      id: "19",
+      name: "Onions",
+      quantity: 3,
+      units: "pcs",
+      foodType: "Vegetable",
+      store: {
+        id: 5,
+        name: "H-E-B",
+      },
+    },
+    {
+      id: "20",
+      name: "Salmon",
+      quantity: 2,
+      units: "fillet",
+      foodType: "Meat",
+      store: {
+        id: 3,
+        name: "Costco",
+      },
+    },
+    {
+      id: "21",
+      name: "Peanut Butter",
+      quantity: 1,
+      units: "jar",
+      foodType: "Spread",
+      store: {
+        id: 2,
+        name: "Target",
+      },
+    },
+    {
+      id: "22",
+      name: "Lettuce",
+      quantity: 2,
+      units: "head",
+      foodType: "Vegetable",
+      store: {
+        id: 7,
+        name: "Whole Foods",
+      },
+    },
+    {
+      id: "23",
+      name: "Strawberries",
+      quantity: 1,
+      units: "box",
+      foodType: "Fruit",
+      store: {
+        id: 6,
+        name: "Safeway",
+      },
+    },
+    {
+      id: "24",
+      name: "Soda",
+      quantity: 12,
+      units: "can",
+      foodType: "Beverage",
+      store: {
+        id: 1,
+        name: "Walmart",
+      },
+    },
+    {
+      id: "25",
+      name: "Oats",
+      quantity: 1,
+      units: "bag",
+      foodType: "Grain",
+      store: {
+        id: 4,
+        name: "Kroger",
+      },
+    },
+    // Additional 20 entries
+    {
+      id: "26",
+      name: "Grapes",
+      quantity: 2,
+      units: "lbs",
+      foodType: "Fruit",
+      store: {
+        id: 2,
+        name: "Target",
+      },
+    },
+    {
+      id: "27",
+      name: "Broccoli",
+      quantity: 1,
+      units: "head",
+      foodType: "Vegetable",
+      store: {
+        id: 7,
+        name: "Whole Foods",
+      },
+    },
+    {
+      id: "28",
+      name: "Turkey Breast",
+      quantity: 2,
+      units: "lbs",
+      foodType: "Meat",
+      store: {
+        id: 3,
+        name: "Costco",
+      },
+    },
+    {
+      id: "29",
+      name: "Almond Milk",
+      quantity: 1,
+      units: "carton",
+      foodType: "Dairy",
+      store: {
+        id: 4,
+        name: "Kroger",
+      },
+    },
+    {
+      id: "30",
+      name: "Bagels",
+      quantity: 6,
+      units: "pcs",
+      foodType: "Grain",
+      store: {
+        id: 6,
+        name: "Safeway",
+      },
+    },
+    {
+      id: "31",
+      name: "Celery",
+      quantity: 1,
+      units: "bunch",
+      foodType: "Vegetable",
+      store: {
+        id: 1,
+        name: "Walmart",
+      },
+    },
+    {
+      id: "32",
+      name: "Pork Chops",
+      quantity: 4,
+      units: "pcs",
+      foodType: "Meat",
+      store: {
+        id: 3,
+        name: "Costco",
+      },
+    },
+    {
+      id: "33",
+      name: "Blueberries",
+      quantity: 1,
+      units: "box",
+      foodType: "Fruit",
+      store: {
+        id: 6,
+        name: "Safeway",
+      },
+    },
+    {
+      id: "34",
+      name: "Cucumbers",
+      quantity: 3,
+      units: "pcs",
+      foodType: "Vegetable",
+      store: {
+        id: 5,
+        name: "H-E-B",
+      },
+    },
+    {
+      id: "35",
+      name: "Honey",
+      quantity: 1,
+      units: "jar",
+      foodType: "Spread",
+      store: {
+        id: 2,
+        name: "Target",
+      },
+    },
+    {
+      id: "36",
+      name: "Granola Bars",
+      quantity: 1,
+      units: "box",
+      foodType: "Grain",
+      store: {
+        id: 4,
+        name: "Kroger",
+      },
+    },
+    {
+      id: "37",
+      name: "Zucchini",
+      quantity: 2,
+      units: "pcs",
+      foodType: "Vegetable",
+      store: {
+        id: 7,
+        name: "Whole Foods",
+      },
+    },
+    {
+      id: "38",
+      name: "Shrimp",
+      quantity: 1,
+      units: "lb",
+      foodType: "Meat",
+      store: {
+        id: 3,
+        name: "Costco",
+      },
+    },
+    {
+      id: "39",
+      name: "Mushrooms",
+      quantity: 1,
+      units: "box",
+      foodType: "Vegetable",
+      store: {
+        id: 1,
+        name: "Walmart",
+      },
+    },
+    {
+      id: "40",
+      name: "Maple Syrup",
+      quantity: 1,
+      units: "bottle",
+      foodType: "Spread",
+      store: {
+        id: 2,
+        name: "Target",
+      },
+    },
+    {
+      id: "41",
+      name: "Avocados",
+      quantity: 4,
+      units: "pcs",
+      foodType: "Fruit",
+      store: {
+        id: 7,
+        name: "Whole Foods",
+      },
+    },
+    {
+      id: "42",
+      name: "Cornflakes",
+      quantity: 1,
+      units: "box",
+      foodType: "Grain",
+      store: {
+        id: 4,
+        name: "Kroger",
+      },
+    },
+    {
+      id: "43",
+      name: "Ham",
+      quantity: 1,
+      units: "lb",
+      foodType: "Meat",
+      store: {
+        id: 3,
+        name: "Costco",
+      },
+    },
+    {
+      id: "44",
+      name: "Peppers",
+      quantity: 3,
+      units: "pcs",
+      foodType: "Vegetable",
+      store: {
+        id: 5,
+        name: "H-E-B",
+      },
+    },
+    {
+      id: "45",
+      name: "Raspberries",
+      quantity: 1,
+      units: "box",
+      foodType: "Fruit",
+      store: {
+        id: 6,
+        name: "Safeway",
+      },
+    },
+    {
+      id: "46",
+      name: "Tortillas",
+      quantity: 1,
+      units: "pack",
+      foodType: "Grain",
+      store: {
+        id: 1,
+        name: "Walmart",
       },
     },
   ],
