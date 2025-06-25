@@ -1,3 +1,4 @@
+import time
 from quixstreams import Application
 
 from src.db import VectorDatabaseClient
@@ -21,6 +22,7 @@ def main():
         consumer.subscribe(topics=["create_recipe", "update_recipe", "delete_recipe"])
 
         while True:
+            print(f"Polling now at time {time.time()}...")
             message = consumer.poll(0.5)
 
             if message is None:
