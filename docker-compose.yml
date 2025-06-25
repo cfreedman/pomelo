@@ -42,6 +42,17 @@ services:
     volumes:
       - ollama:/root/.ollama
 
+  embedder:
+    build: ./embedder
+    depends_on:
+      - kafka
+      - weaviate
+      - ollama
+    environment:
+      WEAVIATE_PORT: 8081
+      WEAVIATE_GRPC_PORT: 50051
+    command: uv run main.py
+
   flask-app:
     build: ./app
     depends_on:
@@ -52,7 +63,7 @@ services:
       - ./app:/app
       - /app/.venv
     environment:
-      - FLASK_DEBUG=1
+      FLASK_DEBUG: 1
     command: uv run -- flask run --host 0.0.0.0
 
   flask-rag:
@@ -66,10 +77,26 @@ services:
       - ./rag:/app
       - /app/.venv
     environment:
-      - FLASK_DEBUG=1
-      - WEAVIATE_PORT=8081
-      - WEAVIATE_GRPC_PORT=50051
+      FLASK_DEBUG: 1
+      WEAVIATE_PORT: 8081
+      WEAVIATE_GRPC_PORT: 50051
     command: uv run -- python app.py
+
+  kafka:
+    image: apache/kafka:latest
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://localhost:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_PROCESS_ROLES: broker, controller
 
   client:
     build: ./client
@@ -82,7 +109,7 @@ services:
       - ./client:/app
       - /app/node_modules
     environment:
-      - HOST=0.0.0.0
+      HOST: 0.0.0.0
 
   pgadmin:
     image: dpage/pgadmin4
