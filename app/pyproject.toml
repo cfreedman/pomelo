@@ -11,6 +11,8 @@ dependencies = [
     "flask-sqlalchemy>=3.1.1",
     "psycopg2-binary>=2.9.10",
     "pydantic>=2.10.6",
+    "pytest>=8.4.1",
+    "quixstreams>=3.17.0",
     "sqlalchemy>=2.0.38",
     "typing>=3.10.0.0",
 ]
