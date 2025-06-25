@@ -10,5 +10,7 @@ dependencies = [
     "langchain>=0.3.25",
     "ollama>=0.5.1",
     "pydantic>=2.11.5",
+    "pytest>=8.4.1",
+    "quixstreams>=3.17.0",
     "weaviate-client>=4.15.0",
 ]

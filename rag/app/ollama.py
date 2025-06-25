@@ -17,7 +17,7 @@ class OllamaClient:
         max_retries: int = 3,
         retry_delay: float = 0.5,
     ):
-        self.client = Client()
+        self.client = Client(host="http://ollama:11434")
         self.embedding_model = embedding_model
         self.generative_model = generative_model
         self.max_retries = max_retries
@@ -32,6 +32,8 @@ class OllamaClient:
                 result = self.client.embeddings(
                     model=self.embedding_model, prompt=serialized_recipe
                 )
+                print(f"Embedding result {result}")
+                print(f"Embedding is {result.embedding}")
                 return result.embedding
             except Exception as e:
                 print(f"Issue with generating embedding from Ollama API with error {e}")

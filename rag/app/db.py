@@ -27,7 +27,7 @@ class VectorDatabaseClient:
             )
         )
         self.embedding_client = embedding_client
-
+        self.client.connect()
         self._initialize_collection()
 
     def _initialize_collection(self):
