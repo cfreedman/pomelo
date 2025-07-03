@@ -34,7 +34,7 @@ def get_suggestion():
 
     recipes = [Recipe.model_validate(recipe) for recipe in recipes_json]
 
-    food_calendar = ollama_client.generate_meal_plan(
+    food_calendar = ollama_client.generate_food_calendar(
         recipes=recipes, question=input_string
     )
 

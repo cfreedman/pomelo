@@ -3,17 +3,11 @@ from langchain_core.prompts import PromptTemplate
 
 from rag.app.schema import FoodCalendar
 
-food_calendar_prompt = """
+food_calendar_system_prompt = """
 You are a helpful assistant who is knowledgeable at crafting weekly meal plans
 according to some input instructions by users and specific constraints. Use the context below and those specific recipes to form your answer:
 
-Recipes:
-{recipes}
-
-User Input:
-{user_input}
-
-Respond with a JSON object structured like this:
+Always respond with a JSON object structured like this below:
 
 {
     "Sunday": [
@@ -59,7 +53,19 @@ This defines each of the weekdays and gives list of recipes taking the form
 Do not include any extra explanation or markdown, just the JSON string.
 """
 
-food_calendar_template = PromptTemplate.from_template(food_calendar_prompt)
+food_calendar_user_prompt = """
+Take the information below which is a list of possible recipes to choose from as well as the user's original input,
+which describe what characteristics and features they want in their weekly meal plan. Remember to always follow the
+templating described in the previous system prompt and don't deviate from it.
+
+These are the possible recipes to select from when making the week's meal plan:
+{recipes}
+
+This is the user'ss original message describing their needs and preferences for the meal plan:
+{user_input}
+"""
+
+food_calendar_template = PromptTemplate.from_template(food_calendar_user_prompt)
 
 food_calendar_parser = PydanticOutputParser(pydantic_object=FoodCalendar)
 

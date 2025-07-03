@@ -562,7 +562,7 @@ INSERT INTO ingredient_shopping_list_bridge (ingredient_id, shopping_list_id, qu
 (21, 13, 2),
 (38, 13, 2),
 (2, 13, 3),
-(29, 13, 1)
+(29, 13, 1);
 
 INSERT INTO recipe_meal_plan_bridge (recipe_id, meal_plan_id, quantity) VALUES
 -- Each meal_plan_id (1-92) gets 2-3 random recipes with random quantities (1-4)

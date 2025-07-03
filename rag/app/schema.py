@@ -35,13 +35,13 @@ class Recipe(BaseModel):
         name = f"Recipe: {self.name}\n"
         features = f"Features: {self.cusine}, {self.meal_type}\n"
         servings = f"Servings: {self.servings}\n"
-        ingredients = "\n".join(
+        ingredients = "Ingredients:" + "\n".join(
             [
                 f"{ingredient.quantity} {ingredient.units} {ingredient.name}"
                 for ingredient in self.ingredients
             ]
         )
-        tags = "Tags: " + " ".join([f"{tag.name}" for tag in self.tags])
+        tags = "Tags: " + ", ".join([f"{tag.name}" for tag in self.tags])
 
         return name + features + servings + ingredients + tags
 
