@@ -3,8 +3,8 @@ import {
   fetchAllRecipes,
   Recipe,
   RecipeCreate,
-  Tag,
 } from "@/lib/recipes";
+import { Tag } from "@/lib/ingredients";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useRecipes = () => {

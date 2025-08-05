@@ -19,6 +19,7 @@ class Ingredient(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50))
     units: Mapped[str] = mapped_column(String(20), nullable=True)
+    food_type: Mapped[str] = mapped_column(String(50), nullable=True)
     # preferred_store: Mapped[int] = mapped_column(ForeignKey("stores.id"))
 
     # Field to select list of ingredient-recipe-bridge rows for data stored there
@@ -42,7 +43,9 @@ class Ingredient(db.Model):
         return f"Ingredient id={self.id}, name={self.name}"
 
     def to_ingredient_schema(self) -> IngredientSchema:
-        return IngredientSchema(id=self.id, name=self.name, units=self.units)
+        return IngredientSchema(
+            id=self.id, name=self.name, units=self.units, food_type=self.food_type
+        )
 
 
 class Tag(db.Model):

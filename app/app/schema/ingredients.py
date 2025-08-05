@@ -9,6 +9,7 @@ class Ingredient(BaseModel):
     id: int
     name: str
     units: Optional[str] = None
+    food_type: Optional[str] = None
 
 
 class IngredientCreate(BaseModel):
