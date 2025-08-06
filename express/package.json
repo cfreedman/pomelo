@@ -1,0 +1,26 @@
+{
+  "name": "pomelo-express-app",
+  "version": "1.0.0",
+  "description": "An express variant for the pomelo backend service",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon",
+    "test": "test",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "author": "Collum Freedman",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/pg": "^8.15.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
